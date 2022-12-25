@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottomNavigation_lastLocation"
+        android:title="Latest"
+        android:icon="@drawable/ic_launcher_background"/>
+    <item
+        android:id="@+id/bottomNavigation_history"
+        android:title="History"
+        android:icon="@drawable/ic_launcher_background"/>
+    <item
+        android:id="@+id/bottomNavigation_radar"
+        android:title="Radar"
+        android:icon="@drawable/ic_launcher_background"/>
+</menu>
