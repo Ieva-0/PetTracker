@@ -1,10 +1,16 @@
 package edu.ktu.pettrackerclient;
 
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -12,7 +18,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
@@ -147,10 +157,16 @@ public class DeviceZoneService extends Service {
         }
         return minLong;
     }
+    NotificationManagerCompat notificationManagerCompat;
+    Notification notification;
 
     public void actions() {
         Log.d("1122", "in action");
-
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_menu_gallery)
+                .setContentTitle("hi there")
+                .setContentText("uwu")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         RetrofitService retrofitService = new RetrofitService();
         ZonePointApi zoneApi = retrofitService.getRetrofit().create(ZonePointApi.class);
         DeviceApi deviceApi = retrofitService.getRetrofit().create(DeviceApi.class);
@@ -182,6 +198,18 @@ public class DeviceZoneService extends Service {
                                                     }
 
                                                     MyPolygon polygon = new MyPolygon(polygonPoints);
+
+                                                    NotificationChannel channel = new NotificationChannel("hi", "mychannel", NotificationManager.IMPORTANCE_DEFAULT);
+                                                    NotificationManager manager = getSystemService(NotificationManager.class);
+                                                    manager.createNotificationChannel(channel);
+                                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "hi")
+                                                            .setSmallIcon(R.drawable.ic_menu_gallery)
+                                                            .setContentTitle("title")
+                                                            .setContentText("text uwu");
+                                                    notification = builder.build();
+                                                    notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+                                                    notificationManagerCompat.notify(1, notification);
+
                                                 }
                                             }
 
@@ -201,6 +229,8 @@ public class DeviceZoneService extends Service {
                     }
                 });
     }
+
+
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
     private final class ServiceHandler extends Handler {
