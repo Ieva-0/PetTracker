@@ -16,24 +16,29 @@
         android:theme="@style/Theme.PetTrackerClient"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <service
+            android:name=".DeviceZoneService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
-            android:name=".test"
-            android:exported="true"
-            android:label="@string/title_activity_test"
-            android:theme="@style/Theme.PetTrackerClient.NoActionBar">
+            android:name=".StartActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".DeviceCreateEditActivity"
-            android:exported="false"
-            android:parentActivityName=".test">
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_test"
+            android:theme="@style/Theme.PetTrackerClient.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -41,14 +46,18 @@
         <activity
             android:name=".GpsActivity"
             android:exported="false"
-            android:parentActivityName=".test">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+<!--        <service-->
+<!--            android:name=".DeviceZoneService"-->
+<!--            android:enabled="true" />-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAv31ZSC2mf2w3mOlCTfyUM_fvgzqTeTFA" />
+
 
     </application>
 

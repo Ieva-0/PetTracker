@@ -15,37 +15,38 @@
         android:textSize="16sp"
         android:textStyle="bold"
         />
+
     <TextView
+        android:id="@+id/deviceItem_appliedTo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="Device Identifier"
-        android:id="@+id/deviceItem_identifier"
+        android:text="No zones applied."
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deviceItem_name"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:text="Edit"
-        android:id="@+id/deviceItem_edit"
+        app:layout_constraintTop_toBottomOf="@id/deviceItem_name" />
+    <ImageButton
+        android:id="@+id/deviceItem_delete"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.712"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        />
-<!--    <Button-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="20dp"-->
-<!--        android:text="Delete"-->
-<!--        android:id="@+id/deviceItem_delete"-->
-<!--        app:layout_constraintEnd_toStartOf="@id/deviceItem_edit"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        android:textSize="16sp"-->
-<!--        android:textStyle="bold"-->
-<!--        />-->
+        app:layout_constraintVertical_bias="0.407"
+        app:srcCompat="@drawable/ic_baseline_delete_24" />
+
+    <ImageButton
+        android:id="@+id/deviceItem_edit"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.92"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.416"
+        app:srcCompat="@drawable/ic_baseline_edit_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

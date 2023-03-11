@@ -7,6 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".GpsActivity">
 
+    <ImageView
+        android:id="@+id/imageDraw"
+        android:layout_width="381dp"
+        android:layout_height="355dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.324"
+        app:srcCompat="@drawable/compass1" />
+
+
     <TextView
         android:id="@+id/thirdFragment"
         android:layout_width="wrap_content"
@@ -17,8 +30,18 @@
         android:textStyle="italic|bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.469" />
+
+    <Button
+        android:id="@+id/drawBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/imageDraw"
+        app:layout_constraintEnd_toEndOf="@+id/thirdFragment"
+        app:layout_constraintStart_toStartOf="@+id/thirdFragment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,13 +3,13 @@
     <item
         android:id="@+id/bottomNavigation_lastLocation"
         android:title="Latest"
-        android:icon="@drawable/ic_launcher_background"/>
+        android:icon="@drawable/ic_baseline_access_time_24"/>
     <item
         android:id="@+id/bottomNavigation_history"
         android:title="History"
-        android:icon="@drawable/ic_launcher_background"/>
+        android:icon="@drawable/ic_baseline_timeline_24"/>
     <item
         android:id="@+id/bottomNavigation_radar"
         android:title="Radar"
-        android:icon="@drawable/ic_launcher_background"/>
+        android:icon="@drawable/ic_baseline_sensors_24"/>
 </menu>

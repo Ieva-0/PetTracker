@@ -10,15 +10,17 @@ import javax.persistence.GenerationType;
 public class Device {
 	
 	@Id
-	private String id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String name;
-	private int user_id_foreign;
-
-    public String getId() {
+	private String password;
+	private Long fk_user_id;
+	private Long fk_zone_id;
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -30,22 +32,37 @@ public class Device {
         this.name = name;
     }
 
-    public int getUser_id_foreign() {
-        return user_id_foreign;
-    }
-
-    public void setUser_id_foreign(int user_id_foreign) {
-        this.user_id_foreign = user_id_foreign;
-    }
-    
     @Override
     public String toString() {
         return "Device{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", user_id_foreign=" + user_id_foreign +
                 '}';
     }
+
+	public Long getFk_user_id() {
+		return fk_user_id;
+	}
+
+	public void setFk_user_id(Long fk_user_id) {
+		this.fk_user_id = fk_user_id;
+	}
+
+	public Long getFk_zone_id() {
+		return fk_zone_id;
+	}
+
+	public void setFk_zone_id(Long fk_zone_id) {
+		this.fk_zone_id = fk_zone_id;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	
 	
 }

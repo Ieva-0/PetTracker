@@ -5,20 +5,14 @@ import java.util.List;
 import edu.ktu.pettrackerclient.model.LocationEntry;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Query;
 
 public interface LocationEntryApi {
-    @GET("/location/last")
-    Call<LocationEntry> getLastForDevice(@Query("device_id_foreign") String device);
+    @GET("/locations/last")
+    Call<LocationEntry> getLastForDevice(@Header("Authorization") String token, @Query("device_id") Long device);
 
-    @GET("/location/history")
-    Call<List<LocationEntry>> getHistoryForDevice(@Query("device_id_foreign") String device);
-
-    @GET("/location/last")
-    Call<LocationEntry> getLast();
-
-    @GET("/location/history")
-    Call<List<LocationEntry>> getHistory();
-
+    @GET("/locations/history")
+    Call<List<LocationEntry>> getHistoryForDevice(@Header("Authorization") String token, @Query("device_id") Long device);
 
 }

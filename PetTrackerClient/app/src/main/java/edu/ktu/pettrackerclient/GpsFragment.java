@@ -1,6 +1,5 @@
 package edu.ktu.pettrackerclient;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -101,7 +100,7 @@ public class GpsFragment extends Fragment implements NavigationBarView.OnItemSel
         }
         return false;
     }
-    public test activity;
+    public MainActivity activity;
 
     @Override
     public void onAttach(Context context) {

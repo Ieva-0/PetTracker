@@ -12,24 +12,18 @@ public class LocationEntryDao {
 	@Autowired
 	private LocationEntryRepository repository;
 	
-	public List<LocationEntry> locationHistoryForDevice(String device) {
+	public List<LocationEntry> locationHistoryForDevice(Long device) {
 		List<LocationEntry> locationEntries = new ArrayList<>();
 		Streamable.of(repository.entryHistoryForDevice(device)).forEach(locationEntries::add);
 		return locationEntries;
 	}
 	
-	public LocationEntry lastEntryForDevice(String device) {
+	public LocationEntry lastEntryForDevice(Long device) {
 		return repository.lastEntryForDevice(device);
 	}
 	
-	public List<LocationEntry> locationHistory() {
-		List<LocationEntry> locationEntries = new ArrayList<>();
-		Streamable.of(repository.entryHistory()).forEach(locationEntries::add);
-		return locationEntries;
-	}
-	
-	public LocationEntry lastEntry() {
-		return repository.lastEntry();
+	public LocationEntry newEntryForDevice(LocationEntry entry) {
+		return repository.save(entry);
 	}
 
 

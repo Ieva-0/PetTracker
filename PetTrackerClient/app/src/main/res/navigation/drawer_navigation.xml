@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/drawerNav_deviceList">
+    <fragment
+        android:id="@+id/drawerNav_deviceList"
+        android:name="edu.ktu.pettrackerclient.DeviceListFragment"
+        android:label="@string/menu_devicelist"
+        tools:layout="@layout/fragment_device_list">
+        <action
+            android:id="@+id/action_drawerNav_deviceList_to_deviceCreateFragment"
+            app:destination="@id/deviceCreateFragment" />
+        <action
+            android:id="@+id/action_drawerNav_deviceList_to_drawerNav_zoneList"
+            app:destination="@id/drawerNav_zoneList" />
+        <action
+            android:id="@+id/action_drawerNav_deviceList_to_deviceEditFragment"
+            app:destination="@id/deviceEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawerNav_createZone"
+        android:name="edu.ktu.pettrackerclient.ZoneCreateFragment"
+        android:label="fragment_zone_create"
+        tools:layout="@layout/fragment_zone_create" >
+        <action
+            android:id="@+id/action_drawerNav_createZone_to_drawerNav_zoneList"
+            app:destination="@id/drawerNav_zoneList" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawerNav_zoneList"
+        android:name="edu.ktu.pettrackerclient.ZoneListFragment"
+        android:label="fragment_zone_list"
+        tools:layout="@layout/fragment_zone_list" >
+        <action
+            android:id="@+id/action_drawerNav_zoneList_to_drawerNav_deviceList"
+            app:destination="@id/drawerNav_deviceList" />
+        <action
+            android:id="@+id/action_drawerNav_zoneList_to_drawerNav_createZone"
+            app:destination="@id/drawerNav_createZone" />
+    </fragment>
+    <fragment
+        android:id="@+id/deviceCreateFragment"
+        android:name="edu.ktu.pettrackerclient.DeviceCreateFragment"
+        android:label="fragment_device_create"
+        tools:layout="@layout/fragment_device_create" >
+        <action
+            android:id="@+id/action_deviceCreateFragment_to_drawerNav_deviceList"
+            app:destination="@id/drawerNav_deviceList" />
+    </fragment>
+    <fragment
+        android:id="@+id/deviceEditFragment"
+        android:name="edu.ktu.pettrackerclient.DeviceEditFragment"
+        android:label="fragment_device_edit"
+        tools:layout="@layout/fragment_device_edit" >
+        <action
+            android:id="@+id/action_deviceEditFragment_to_drawerNav_deviceList"
+            app:destination="@id/drawerNav_deviceList" />
+    </fragment>
+    <!--    <fragment-->
+<!--        android:id="@+id/drawerNav_latest"-->
+<!--        android:name="edu.ktu.pettrackerclient.LastLocationFragment"-->
+<!--        android:label="@string/menu_latest"-->
+<!--        tools:layout="@layout/fragment_last_location" />-->
+
+<!--    <fragment-->
+<!--        android:id="@+id/drawerNav_history"-->
+<!--        android:name="edu.ktu.pettrackerclient.HistoryFragment"-->
+<!--        android:label="@string/menu_history"-->
+<!--        tools:layout="@layout/fragment_history" />-->
+
+<!--    <fragment-->
+<!--        android:id="@+id/drawerNav_radar"-->
+<!--        android:name="edu.ktu.pettrackerclient.RadarFragment"-->
+<!--        android:label="@string/menu_radar"-->
+<!--        tools:layout="@layout/fragment_radar" />-->
+</navigation>

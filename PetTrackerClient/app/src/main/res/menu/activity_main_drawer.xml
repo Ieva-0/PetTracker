@@ -5,17 +5,22 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/drawerNav_account"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Account" />
+        <item
             android:id="@+id/drawerNav_deviceList"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/menu_devicelist" />
         <item
-            android:id="@+id/drawerNav_gpsFeatures"
+            android:id="@+id/drawerNav_petList"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_gpsfeatures" />
-<!--        <item-->
-<!--            android:id="@+id/drawerNav_latest"-->
-<!--            android:icon="@drawable/ic_menu_camera"-->
-<!--            android:title="@string/menu_latest" />-->
+            android:title="Pets" />
+        <item
+            android:id="@+id/drawerNav_zoneList"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Zones" />
+
 <!--        <item-->
 <!--            android:id="@+id/drawerNav_history"-->
 <!--            android:icon="@drawable/ic_menu_gallery"-->

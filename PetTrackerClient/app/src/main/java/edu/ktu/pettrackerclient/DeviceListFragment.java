@@ -2,9 +2,11 @@ package edu.ktu.pettrackerclient;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,10 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -93,11 +93,14 @@ public class DeviceListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         RetrofitService retrofitService = new RetrofitService();
         DeviceApi deviceApi = retrofitService.getRetrofit().create(DeviceApi.class);
-        deviceApi.getAll()
+        SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        Long user_id = pref.getLong("user_id", 0);
+        Log.d("1122", token);
+        deviceApi.getAllDevicesForUser(token, user_id)
                 .enqueue(new Callback<List<Device>>() {
                     @Override
                     public void onResponse(Call<List<Device>> call, Response<List<Device>> response) {
-//                        Log.d("1122", String.valueOf(response.body()));
                         saveResults(response.body());
                         populateListView(response.body());
                     }
@@ -105,12 +108,14 @@ public class DeviceListFragment extends Fragment {
                     @Override
                     public void onFailure(Call<List<Device>> call, Throwable t) {
                         Toast.makeText(getContext(), "Failed to load devices", Toast.LENGTH_LONG).show();
+                        Log.d("1122", String.valueOf(t));
+
                     }
                 });
         FloatingActionButton fab = v.findViewById(R.id.fab_addDevice);
         fab.setOnClickListener(view -> {
-            Intent intent = new Intent(getContext(), DeviceCreateEditActivity.class);
-            startActivity(intent);
+            Navigation.findNavController(view).navigate(R.id.action_drawerNav_deviceList_to_deviceCreateFragment);
+
         });
         EditText searchTerm = v.findViewById(R.id.deviceSearch_textfield);
         Button b = v.findViewById(R.id.deviceSearch_button);
@@ -146,7 +151,7 @@ public class DeviceListFragment extends Fragment {
         adapter = new DeviceAdapter(list, getContext());
         recyclerView.setAdapter(adapter);
     }
-    public test activity;
+    public MainActivity activity;
 
     @Override
     public void onAttach(Context context) {

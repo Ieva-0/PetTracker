@@ -31,7 +31,7 @@ public class RetrofitService {
         }).create();
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://192.168.1.103:9002")
-//                .baseUrl(("https://pettrackerapp.loca.lt"))
+//                .baseUrl("https://pettracker.loca.lt")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }

@@ -1,7 +1,7 @@
 package edu.ktu.pettrackerclient;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -91,8 +91,8 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_history, container, false);
-        String device_id = this.getArguments().getString("device_id");
-        Toast.makeText(getContext(), "device id is " + this.getArguments().getString("device_id"), Toast.LENGTH_SHORT).show();
+//        String device_id = this.getArguments().getString("device_id");
+//        Toast.makeText(getContext(), "device id is " + this.getArguments().getString("device_id"), Toast.LENGTH_SHORT).show();
         mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map2);
         if (mapFragment == null) {
             FragmentManager fragmentManager = getParentFragmentManager();
@@ -105,7 +105,9 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
         LocationEntryApi locationEntryApi = retrofitService.getRetrofit().create(LocationEntryApi.class);
 
         String mytag = "1122";
-        locationEntryApi.getHistoryForDevice("0")
+        SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        locationEntryApi.getHistoryForDevice(token, 1L)
                 .enqueue(new Callback<List<LocationEntry>>() {
                     @Override
                     public void onResponse(Call<List<LocationEntry>> call, Response<List<LocationEntry>> response) {
@@ -114,7 +116,7 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
                             @Override
                             public void onMapReady(GoogleMap googleMap) {
                                 drawing(googleMap);
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locations.get(locations.size()-1).getLattitude(),locations.get(locations.size()-1).getLongitude()), 10));
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locations.get(locations.size()-1).getLatitude(),locations.get(locations.size()-1).getLongitude()), 10));
 
                             }
                         });
@@ -141,8 +143,9 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
 
         String mytag = "1122";
         Log.d(mytag, "im in on resume for history");
-
-        locationEntryApi.getHistoryForDevice("0")
+        SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        locationEntryApi.getHistoryForDevice(token, 1L)
                 .enqueue(new Callback<List<LocationEntry>>() {
                     @Override
                     public void onResponse(Call<List<LocationEntry>> call, Response<List<LocationEntry>> response) {
@@ -165,12 +168,12 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
     public void drawing(GoogleMap googleMap) {
         PolylineOptions opts = new PolylineOptions().clickable(false);
         for(int i = 0; i < locations.size(); i++) {
-            opts.add(new LatLng(locations.get(i).getLattitude(), locations.get(i).getLongitude()));
+            opts.add(new LatLng(locations.get(i).getLatitude(), locations.get(i).getLongitude()));
         }
         Polyline line = googleMap.addPolyline(opts);
         line.setTag("B");
         stylePolyline(line);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locations.get(0).getLattitude(), locations.get(0).getLongitude()), 4));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locations.get(0).getLatitude(), locations.get(0).getLongitude()), 4));
 
     }
     private static final int COLOR_BLACK_ARGB = 0xff000000;
@@ -219,7 +222,7 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
     }
-    public test activity;
+    public MainActivity activity;
 
     @Override
     public void onAttach(Context context) {

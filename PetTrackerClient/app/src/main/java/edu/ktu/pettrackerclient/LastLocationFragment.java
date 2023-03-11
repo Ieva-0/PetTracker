@@ -1,6 +1,7 @@
 package edu.ktu.pettrackerclient;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -85,10 +86,17 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_last_location, container, false);
-        String device_id = this.getArguments().getString("device_id");
-        Toast.makeText(getContext(), "device id is " + device_id, Toast.LENGTH_SHORT).show();
+        Log.d("1122", "im in on create view" );
 
+        View v = inflater.inflate(R.layout.fragment_last_location, container, false);
+//        String device_id = this.getArguments().getString("device_id");
+        SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        Long device_id = pref.getLong("device_id", 0);
+        Log.d("1122", String.valueOf(device_id));
+
+        Toast.makeText(getContext(), "device id is " + device_id, Toast.LENGTH_SHORT).show();
+        b = v.findViewById(R.id.lastbutt);
         mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             FragmentManager fragmentManager = getParentFragmentManager();
@@ -97,13 +105,46 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
             fragmentTransaction.replace(R.id.map, mapFragment).commit();
         }
         mapFragment.getMapAsync(this);
-
+        Log.d("1122", mapFragment.toString());
         retro = new RetrofitService();
         location_api = retro.getRetrofit().create(LocationEntryApi.class);
 //        Handler handler = new Handler();
 //        SocketThread thread = new SocketThread(location_api, handler);
 //        thread.start();
-        location_api.getLastForDevice("0")
+        /*
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RetrofitService serv = new RetrofitService();
+                LocationEntryApi locapi = serv.getRetrofit().create(LocationEntryApi.class);
+                locapi.getLastForDevice("0")
+                        .enqueue(new Callback<LocationEntry>() {
+                            @Override
+                            public void onResponse(Call<LocationEntry> call, Response<LocationEntry> response) {
+                                saveResult(response.body());
+                                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                                    @Override
+                                    public void onMapReady(GoogleMap googleMap) {
+                                        googleMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
+                                                .title("LinkedIn")
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLattitude(),latest.getLongitude()), 10));
+                                        Toast.makeText(getContext(), mapFragment.toString(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(Call<LocationEntry> call, Throwable t) {
+                                Toast.makeText(getContext(), "failed btn", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            }
+        });*/
+        location_api.getLastForDevice(token, 1L)
                 .enqueue(new Callback<LocationEntry>() {
                     @Override
                     public void onResponse(Call<LocationEntry> call, Response<LocationEntry> response) {
@@ -112,10 +153,10 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
                             @Override
                             public void onMapReady(GoogleMap googleMap) {
                                 googleMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
+                                        .position(new LatLng(latest.getLatitude(),latest.getLongitude()))
                                         .title("LinkedIn")
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLattitude(),latest.getLongitude()), 10));
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLatitude(),latest.getLongitude()), 10));
                             }
                         });
                     }
@@ -142,25 +183,26 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
 //            fragmentTransaction.replace(R.id.map, mapFragment).commit();
 //        }
 //        mapFragment.getMapAsync(this);
-
+        SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
         String mytag = "1122";
-        location_api.getLastForDevice("0")
+        location_api.getLastForDevice(token, 1L)
                 .enqueue(new Callback<LocationEntry>() {
                     @Override
                     public void onResponse(Call<LocationEntry> call, Response<LocationEntry> response) {
-                        Log.d(mytag, "im in on resume for latest" + String.valueOf(response.body()));
+//                        Log.d(mytag, "im in on resume for latest" + String.valueOf(response.body()));
 
                         saveResult(response.body());
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap googleMap) {
-                                Log.d(mytag, "im in map ready in on resume for latest" );
+//                                Log.d(mytag, "im in map ready in on resume for latest" );
 
                                 googleMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
+                                        .position(new LatLng(latest.getLatitude(),latest.getLongitude()))
                                         .title("LinkedIn")
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLattitude(),latest.getLongitude()), 10));
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLatitude(),latest.getLongitude()), 10));
                             }
                         });
                     }
@@ -177,12 +219,13 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
     }
     @Override
     public void onMapReady(GoogleMap map) {
-        //this.map = map;
-        /*map.addMarker(new MarkerOptions()
-                .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
-                .title("LinkedIn")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.4233438, -122.0728817), 10));*/
+//        Log.d("1122", "im in map ready outside of request" );
+
+//        map.addMarker(new MarkerOptions()
+//                .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
+//                .title("LinkedIn")
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.4233438, -122.0728817), 10));
 
     }
     class SocketThread extends Thread {
@@ -198,7 +241,7 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
             // whenever you receive a part that should update the ui,
             // do something like:
             while(true) {
-                api.getLastForDevice("0")
+                api.getLastForDevice("Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyZWciLCJpYXQiOjE2Nzc2MTAwNjUsImV4cCI6MTY3NzY5NjQ2NX0.iR_F5EuW76eEn_8NGujoeLUbdNecoA2hKst2Y40C8JoZlsqGy6-SytmQrXbSTtN2SHRc515_ZrKz7rGFiJg-zA", 1L)
                         .enqueue(new Callback<LocationEntry>() {
                             @Override
                             public void onResponse(Call<LocationEntry> call, Response<LocationEntry> response) {
@@ -208,10 +251,10 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
                                         @Override
                                         public void onMapReady(GoogleMap googleMap) {
                                             googleMap.addMarker(new MarkerOptions()
-                                                    .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
+                                                    .position(new LatLng(latest.getLatitude(),latest.getLongitude()))
                                                     .title("LinkedIn")
                                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLattitude(),latest.getLongitude()), 10));
+                                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLatitude(),latest.getLongitude()), 10));
                                         }
                                     });
                                 }
