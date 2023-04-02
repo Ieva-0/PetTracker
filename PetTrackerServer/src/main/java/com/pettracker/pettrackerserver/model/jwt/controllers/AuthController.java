@@ -1,5 +1,6 @@
 package com.pettracker.pettrackerserver.model.jwt.controllers;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +26,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.pettracker.pettrackerserver.model.jwt.exception.TokenRefreshException;
 import com.pettracker.pettrackerserver.model.jwt.payload.response.TokenRefreshResponse;
 import com.pettracker.pettrackerserver.model.jwt.models.ERole;
@@ -66,16 +74,45 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+		try {
+			// This registration token comes from the client FCM SDKs.
+			String registrationToken = "cnbYxhIdTYyCDL4bzuDQmV:APA91bEri00liWE__rKnAffnm8dHTut3kGFxQNjVjg4YS1gTNBXGGSPiPklpqvKl4A43e5yO-Kav8DL55PJ8sJKjx7LPbZCMAkbUnMquEeAL-agj685AtZaKns8OyZ00xl9mAtgxxuCi";
+
+			// See documentation on defining a message payload.
+//			Message message = Message.builder().setNotification(Notification.builder()
+//			        .setTitle("abcd")
+//			        .setBody("abc.")
+//			        .build())
+//					.setToken(registrationToken).build();
+			
+		    Notification.Builder builder = Notification.builder();
+		    Message message = Message.builder()
+		            .setNotification(builder.build())
+		            .putData("title", "abc")
+		            .putData("body", "abc")
+		            .setToken(registrationToken)
+		            .build();
+
+			// Send a message to the device corresponding to the provided
+			// registration token.
+			String response = FirebaseMessaging.getInstance().send(message);
+			System.out.println("Successfully sent message: " + response);
+
+		} catch (FirebaseMessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Response is a message ID string.
 		if (!userRepository.existsByUsername(loginRequest.getUsername())) {
 			System.out.println(loginRequest.getUsername());
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username doesn't exist!"));
 
 		} else {
 			Optional<User> userDetails = userRepository.findByUsername(loginRequest.getUsername());
-			if(userDetails.isPresent()) 
-			{	
+			if (userDetails.isPresent()) {
 				User user = userDetails.get();
-				if(user.getPassword().toUpperCase().trim().equals(loginRequest.getPassword().trim())) {
+				if (user.getPassword().toUpperCase().trim().equals(loginRequest.getPassword().toUpperCase().trim())) {
 					String jwt = jwtUtils.generateJwtToken(user);
 
 					List<String> roles = new ArrayList<String>();
@@ -92,10 +129,9 @@ public class AuthController {
 					return ResponseEntity.badRequest().body(new MessageResponse("Error: Password is inccorrect!"));
 
 				}
-				
 
 			}
-			
+
 		}
 		return ResponseEntity.badRequest().body(new MessageResponse("Error: login failed"));
 

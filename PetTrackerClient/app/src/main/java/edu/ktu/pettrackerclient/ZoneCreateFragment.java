@@ -3,11 +3,16 @@ package edu.ktu.pettrackerclient;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
@@ -16,25 +21,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ktu.pettrackerclient.adapter.ZonePointAdapter;
 import edu.ktu.pettrackerclient.model.MyLine;
 import edu.ktu.pettrackerclient.model.MyPolygon;
 import edu.ktu.pettrackerclient.model.Zone;
 import edu.ktu.pettrackerclient.model.ZonePoint;
+import edu.ktu.pettrackerclient.retrofit.MyMethod;
 import edu.ktu.pettrackerclient.retrofit.RetrofitService;
 import edu.ktu.pettrackerclient.retrofit.ZoneApi;
 import edu.ktu.pettrackerclient.retrofit.ZonePointApi;
@@ -42,21 +55,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ZoneCreateFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, OnMapClickListener {
+public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, OnMapClickListener, GoogleMap.OnMarkerDragListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     SupportMapFragment mapFragment;
     private GoogleMap map;
 
@@ -64,39 +64,78 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ZoneCreateFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ZoneCreateFragment newInstance(String param1, String param2) {
-        ZoneCreateFragment fragment = new ZoneCreateFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
     FloatingActionButton save;
+    FloatingActionButton openbottom;
+
+    boolean editting;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_zone_create, container, false);
+
+        marker_references = new ArrayList<Marker>();
+
         save = v.findViewById(R.id.zoneCreate_Btn);
+        openbottom = v.findViewById(R.id.modifyPoints_btn);
+        getParentFragmentManager().setFragmentResultListener("requestKey", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                Log.d("1122", "hi there im back");
+            }
+        });
+        openbottom.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+//                        saved_points.remove(saved_points.size()-1);
+                        List<ZonePoint> points = convertForSave(new Zone());
+                        Log.d("1122", points.toString());
+                        BottomSheet bottomSheet = new BottomSheet(points);
+                        bottomSheet.setRemove(new MyMethod() {
+                            @Override
+                            public void myMethod(int index) {
+                                List<LatLng> points = updatePoints();
+                                points.remove(index);
+                                if(canDraw(points)) {
+                                    marker_references.get(index).remove();
+                                    marker_references.remove(index);
+                                    saved_points = updatePoints();
+                                    if(saved_points.size() != 0) {
+                                        map_polygon.setPoints(saved_points);
+                                    }
+                                } else {
+                                    Toast.makeText(getContext(), "cannot remove this marker. zone borders can't intersect.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        });
+                        bottomSheet.setUpdate(new MyMethod() {
+                            @Override
+                            public void myMethod(int index) {
+                                for(int i = 0; i < marker_references.size(); i++) {
+                                    marker_references.get(i).setIcon(BitmapDescriptorFactory.fromBitmap(icon(i+1)));
+                                }
+                                saved_points = updatePoints();
+                                if(saved_points.size() >= 3) {
+                                    map_polygon.setPoints(saved_points);
+                                } else {
+                                    if(map_polygon != null) {
+                                        map_polygon.remove();
+                                    }
+                                }
+                            }
+                        });
+                        bottomSheet.show(getActivity().getSupportFragmentManager(),
+                                "ModalBottomSheet");
+                    }
+                });
+
         RetrofitService retrofitService = new RetrofitService();
         ZonePointApi zonePointApi = retrofitService.getRetrofit().create(ZonePointApi.class);
         ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
@@ -188,38 +227,82 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
     public void onMapReady(GoogleMap map) {
         this.map = map;
         this.map.setOnMapClickListener(this);
+        this.map.setOnMarkerDragListener(this);
     }
     List<LatLng> saved_points;
     MyPolygon current_polygon;
     Polygon map_polygon;
 
+    List<Marker> marker_references;
+
+    public void printMarkers() {
+        if(marker_references != null) {
+            for(Marker m : marker_references) {
+                Log.d("1122", "| " + m.getPosition().latitude + ", " + m.getPosition().longitude + " | ");
+            }
+        }
+    }
     @Override
     public void onMapClick(LatLng point) {
         Log.d("1122", "clicked on lat:" + point.latitude +", lng:" + point.longitude);
-        if(saved_points.size() < 3 ) {
-            Log.d("1122", " if < 3");
-            saved_points.add(point);
-            if(saved_points.size() == 3) {
+        Bitmap bmp = icon(marker_references.size()+1);
+        if(marker_references.size() < 3 ) {
+            marker_references.add(map.addMarker(
+                    new MarkerOptions()
+                            .position(point)
+                            .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                            .draggable(true)));
+            saved_points = updatePoints();
+            if(marker_references.size() == 3) {
                 map_polygon = map.addPolygon(new PolygonOptions()
                         .addAll(saved_points)
                         .strokeColor(Color.RED)
                         .fillColor(Color.BLUE));
-                current_polygon = new MyPolygon(saved_points);
             }
         } else {
-            MyPolygon new_polygon = new MyPolygon(saved_points);
-            new_polygon.addPoint(point);
-            if(canDraw(new_polygon)) {
-                saved_points.add(point);
-                current_polygon = new MyPolygon(saved_points);
+            List<LatLng> current_points = updatePoints();
+            current_points.add(point);
+            if(canDraw(current_points)) {
+                marker_references.add(map.addMarker(
+                        new MarkerOptions()
+                                .position(point)
+                                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                                .draggable(true)));
+                saved_points = updatePoints();
                 map_polygon.setPoints(saved_points);
             } else {
                 Toast.makeText(getContext(), "can't draw, lines intersect", Toast.LENGTH_SHORT).show();
             }
         }
+        printMarkers();
+
     }
 
-    public boolean canDraw(MyPolygon new_polygon) {
+    public Bitmap icon(int index) {
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(50, 50, conf);
+        Paint paintbg = new Paint();
+        paintbg.setColor(Color.BLUE);
+        paintbg.setStrokeWidth(50);
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawCircle(25, 25, 25, paintbg);
+        Paint paintext = new Paint();
+        paintext.setColor(Color.GREEN);
+        paintext.setStrokeWidth(50);
+        paintext.setTextSize(65);
+        canvas.drawText(String.valueOf(index), 0, 50, paintext); // paint defines the text color, stroke width, size
+        return bmp;
+    }
+
+    public List<LatLng> updatePoints() {
+        List<LatLng> points = new ArrayList<LatLng>();
+        for(Marker m : marker_references) {
+            points.add(m.getPosition());
+        }
+        return points;
+    }
+    public boolean canDraw(List<LatLng> points) {
+        MyPolygon new_polygon = new MyPolygon(points);
         boolean canDraw = true;
         for(int ii = 0; ii < new_polygon.lines.size(); ii++) {
             for(int jj = 0; jj < new_polygon.lines.size(); jj++) {
@@ -241,7 +324,8 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
             pt.setLatitude(saved_points.get(i).latitude);
             pt.setLongitude(saved_points.get(i).longitude);
             pt.setList_index(i);
-            pt.setFk_zone_id(zone.getId());
+            if(zone.getId() != null)
+                 pt.setFk_zone_id(zone.getId());
             result.add(pt);
         }
 
@@ -265,4 +349,29 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         return true;
     }
 
+    @Override
+    public void onMarkerDrag(@NonNull Marker marker) { }
+
+    @Override
+    public void onMarkerDragEnd(@NonNull Marker marker) {
+        Log.d("1122", "dragged end");
+        List<LatLng> newPoints = updatePoints();
+        if(canDraw(newPoints)) {
+            saved_points = updatePoints();
+            map_polygon.setPoints(saved_points);
+        } else {
+            Toast.makeText(getContext(), "cannot move marker there. zone borders can't intersect.", Toast.LENGTH_SHORT).show();
+            restoreMarkers();
+        }
+        printMarkers();
+    }
+
+    public void restoreMarkers() {
+        for(int i= 0; i < saved_points.size(); i++) {
+            marker_references.get(i).setPosition(saved_points.get(i));
+        }
+    }
+
+    @Override
+    public void onMarkerDragStart(@NonNull Marker marker) { }
 }

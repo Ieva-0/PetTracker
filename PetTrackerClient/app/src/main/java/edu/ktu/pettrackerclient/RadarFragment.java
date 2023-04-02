@@ -1,13 +1,23 @@
 package edu.ktu.pettrackerclient;
 
+import static android.content.Context.LOCATION_SERVICE;
+
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
 import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.FlingAnimation;
 import androidx.fragment.app.Fragment;
@@ -19,6 +29,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import edu.ktu.pettrackerclient.model.LocationEntry;
 import edu.ktu.pettrackerclient.retrofit.LocationEntryApi;
@@ -50,6 +64,8 @@ public class RadarFragment extends Fragment {
     private int counter;
     private ImageView img;
     Button btn;
+    private LocationEntry locationEntry;
+    private LocationEntry currentLocation;
     public RadarFragment() {
         // Required empty public constructor
     }
@@ -86,10 +102,19 @@ public class RadarFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 //        String device_id = this.getArguments().getString("device_id");
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+        locationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
+        locationEntry = new LocationEntry();
+        locationEntry.setLatitude(54.925647);
+        locationEntry.setLongitude(23.968218);
+        currentLocation = new LocationEntry();
+        currentLocation.setLatitude(54.926707);
+        currentLocation.setLongitude(23.938306);
 
         View v = inflater.inflate(R.layout.fragment_radar, container, false);
 
         img = v.findViewById(R.id.imageDraw);
+        img.bringToFront();
 //        String device_id = this.getArguments().getString("device_id");
 //        Toast.makeText(getContext(), "device id is " + device_id, Toast.LENGTH_SHORT).show();
 
@@ -99,7 +124,7 @@ public class RadarFragment extends Fragment {
         counter = 0;
 
         SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        String token = pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
         retro = new RetrofitService();
         location_api = retro.getRetrofit().create(LocationEntryApi.class);
         location_api.getLastForDevice(token, 1L)
@@ -117,31 +142,53 @@ public class RadarFragment extends Fragment {
                 });
         return v;
     }
+
     public MainActivity activity;
+
     public void saveResult(LocationEntry entry) {
         this.latest = entry;
     }
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationManager locationManager;
+
     private SensorEventListener mLightSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if(counter == 10) {
-                counter =0;
+            if (counter == 20) {
+                //point a - current
+                //point b - entry
+//                double a = locationEntry.getLongitude() - currentLocation.getLongitude();
+//                double b = currentLocation.getLatitude() - locationEntry.getLatitude();
+//                double c = currentLocation.getLongitude() * locationEntry.getLatitude() - currentLocation.getLatitude() * locationEntry.getLongitude();
+                double m = (Math.toDegrees(Math.atan((locationEntry.getLongitude() - currentLocation.getLongitude()) / (locationEntry.getLatitude() - currentLocation.getLatitude()))) + 360) % 360;
+                Log.d("1122", "m " + String.valueOf(m));
+
+
+                counter = 0;
                 double x = event.values[0];
                 double y = event.values[1];
                 double z = event.values[2];
+                z = (Math.toDegrees(Math.asin(z)) + 360) % 360;
+                Log.d("1122", "z " + String.valueOf(z));
+
                 FlingAnimation flingAnimation = new FlingAnimation(img, DynamicAnimation.ROTATION);
-                flingAnimation.setFriction(0.3f);
-                flingAnimation.setStartVelocity(100);
-                flingAnimation.setStartValue(500);
-                flingAnimation.setMinValue(Integer.MIN_VALUE);
-                flingAnimation.setMaxValue(Integer.MAX_VALUE);
+                flingAnimation.setFriction(0.1f);
+                flingAnimation.setStartVelocity(-100);
+//                flingAnimation.setStartValue((float) z);
+                float minVal = (float) (Math.min(z, m));
+                float maxVal = (float) (Math.max(z, m));
+                flingAnimation.setMinValue((float) minVal);
+                flingAnimation.setMaxValue((float) maxVal );
                 flingAnimation.start();
-                flingAnimation.start();
-                Log.d("1122", String.valueOf("x" + Math.asin(x)));
-                Log.d("1122", String.valueOf("y" + Math.asin(y)));
-                Log.d("1122", String.valueOf("z" + Math.asin(z)));
-                Log.d("1122", String.valueOf("cos" +event.values[3]));
+
+                Log.d("1122", String.valueOf("x " + Math.toDegrees(Math.asin(x))));
+                Log.d("1122", String.valueOf("y " + Math.toDegrees(Math.asin(y))));
+                Log.d("1122", String.valueOf("z " + Math.toDegrees(Math.asin(z))));
+                Log.d("1122", String.valueOf("cos " + event.values[3]));
+
+
+
 
             }
             else counter++;
@@ -149,7 +196,7 @@ public class RadarFragment extends Fragment {
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            Log.d("1122", sensor.toString() + " - " + accuracy);
+//            Log.d("1122", sensor.toString() + " - " + accuracy);
         }
     };
 

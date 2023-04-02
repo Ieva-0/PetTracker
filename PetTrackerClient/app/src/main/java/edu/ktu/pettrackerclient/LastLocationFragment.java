@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -51,6 +52,7 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
     SupportMapFragment mapFragment;
     Button b;
     LocationEntry latest;
+    TextView noEntries;
     public LastLocationFragment() {
         // Required empty public constructor
     }
@@ -89,6 +91,7 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
         Log.d("1122", "im in on create view" );
 
         View v = inflater.inflate(R.layout.fragment_last_location, container, false);
+        noEntries = v.findViewById(R.id.lastLocation_noData);
 //        String device_id = this.getArguments().getString("device_id");
         SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
         String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
@@ -96,7 +99,6 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
         Log.d("1122", String.valueOf(device_id));
 
         Toast.makeText(getContext(), "device id is " + device_id, Toast.LENGTH_SHORT).show();
-        b = v.findViewById(R.id.lastbutt);
         mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             FragmentManager fragmentManager = getParentFragmentManager();
@@ -111,44 +113,18 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
 //        Handler handler = new Handler();
 //        SocketThread thread = new SocketThread(location_api, handler);
 //        thread.start();
-        /*
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RetrofitService serv = new RetrofitService();
-                LocationEntryApi locapi = serv.getRetrofit().create(LocationEntryApi.class);
-                locapi.getLastForDevice("0")
-                        .enqueue(new Callback<LocationEntry>() {
-                            @Override
-                            public void onResponse(Call<LocationEntry> call, Response<LocationEntry> response) {
-                                saveResult(response.body());
-                                mapFragment.getMapAsync(new OnMapReadyCallback() {
-                                    @Override
-                                    public void onMapReady(GoogleMap googleMap) {
-                                        googleMap.addMarker(new MarkerOptions()
-                                                .position(new LatLng(latest.getLattitude(),latest.getLongitude()))
-                                                .title("LinkedIn")
-                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latest.getLattitude(),latest.getLongitude()), 10));
-                                        Toast.makeText(getContext(), mapFragment.toString(), Toast.LENGTH_SHORT).show();
 
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onFailure(Call<LocationEntry> call, Throwable t) {
-                                Toast.makeText(getContext(), "failed btn", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-            }
-        });*/
-        location_api.getLastForDevice(token, 1L)
+        location_api.getLastForDevice(token, device_id)
                 .enqueue(new Callback<LocationEntry>() {
                     @Override
                     public void onResponse(Call<LocationEntry> call, Response<LocationEntry> response) {
                         saveResult(response.body());
+                        if(latest == null) {
+                            noEntries.setVisibility(View.VISIBLE);
+                            return;
+                        } else {
+                            noEntries.setVisibility(View.INVISIBLE);
+                        }
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap googleMap) {
@@ -193,6 +169,12 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
 //                        Log.d(mytag, "im in on resume for latest" + String.valueOf(response.body()));
 
                         saveResult(response.body());
+                        if(latest == null) {
+                            noEntries.setVisibility(View.VISIBLE);
+                            return;
+                        } else {
+                            noEntries.setVisibility(View.INVISIBLE);
+                        }
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap googleMap) {

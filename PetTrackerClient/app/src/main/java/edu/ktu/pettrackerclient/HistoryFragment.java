@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,6 +56,7 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
     private ImageView img;
     Button btn;
     private List<LocationEntry> locations;
+    TextView noEntries;
     SupportMapFragment mapFragment;
     public HistoryFragment() {
         // Required empty public constructor
@@ -91,6 +93,8 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_history, container, false);
+        noEntries = v.findViewById(R.id.locationHistory_noData);
+
 //        String device_id = this.getArguments().getString("device_id");
 //        Toast.makeText(getContext(), "device id is " + this.getArguments().getString("device_id"), Toast.LENGTH_SHORT).show();
         mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map2);
@@ -112,6 +116,12 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
                     @Override
                     public void onResponse(Call<List<LocationEntry>> call, Response<List<LocationEntry>> response) {
                         saveResult(response.body());
+                        if(locations.size() == 0) {
+                            noEntries.setVisibility(View.VISIBLE);
+                            return;
+                        }else {
+                            noEntries.setVisibility(View.INVISIBLE);
+                        }
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap googleMap) {
@@ -150,6 +160,12 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
                     @Override
                     public void onResponse(Call<List<LocationEntry>> call, Response<List<LocationEntry>> response) {
                         saveResult(response.body());
+                        if(locations.size() == 0) {
+                            noEntries.setVisibility(View.VISIBLE);
+                            return;
+                        }else {
+                            noEntries.setVisibility(View.INVISIBLE);
+                        }
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap googleMap) {

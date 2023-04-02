@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -21,11 +23,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,220 +44,98 @@ import edu.ktu.pettrackerclient.retrofit.DeviceApi;
 import edu.ktu.pettrackerclient.retrofit.RetrofitService;
 import edu.ktu.pettrackerclient.retrofit.ZoneApi;
 import edu.ktu.pettrackerclient.retrofit.ZonePointApi;
+import kotlinx.coroutines.scheduling.CoroutineScheduler;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DeviceZoneService extends Service {
+public class DeviceZoneService extends FirebaseMessagingService {
     public DeviceZoneService() {
     }
-    int startMode;       // indicates how to behave if the service is killed
-    IBinder binder;      // interface for clients that bind
-    boolean allowRebind; // indicates whether onRebind should be used
+    private static final String TAG = "1122";
 
+    // [START receive_message]
     @Override
-    public void onCreate() {
-        HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        // TODO(developer): Handle FCM messages here.
+        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        // Get the HandlerThread's Looper and use it for our Handler
-        serviceLooper = thread.getLooper();
-        serviceHandler = new ServiceHandler(serviceLooper);
-        mStatusChecker.run();
+        // Check if message contains a data payload.
+        if (remoteMessage.getData().size() > 0) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            sendNotification("aaaaa");
+
+        }
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            sendNotification("aaaaa");
+        }
+
+        // Also if you intend on generating your own notifications as a result of a received FCM
+        // message, here is where that should be initiated. See sendNotification method below.
     }
+    // [END receive_message]
+
+    // [START on_new_token]
+    /**
+     * There are two scenarios when onNewToken is called:
+     * 1) When a new token is generated on initial app startup
+     * 2) Whenever an existing token is changed
+     * Under #2, there are three scenarios when the existing token is changed:
+     * A) App is restored to a new device
+     * B) User uninstalls/reinstalls the app
+     * C) User clears app data
+     */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+    public void onNewToken(@NonNull String token) {
+        Log.d(TAG, "Refreshed token: " + token);
 
-        // For each start request, send a message to start a job and deliver the
-        // start ID so we know which request we're stopping when we finish the job
-        Message msg = serviceHandler.obtainMessage();
-        msg.arg1 = startId;
-        serviceHandler.sendMessage(msg);
+        // If you want to send messages to this application instance or
+        // manage this apps subscriptions on the server side, send the
+        // FCM registration token to your app server.
+        sendRegistrationToServer(token);
+    }
+    // [END on_new_token]
 
-        // If we get killed, after returning from here, restart
-        return START_STICKY;
-    }
-    @Override
-    public IBinder onBind(Intent intent) {
-        // A client is binding to the service with bindService()
-        return binder;
-    }
-    @Override
-    public boolean onUnbind(Intent intent) {
-        // All clients have unbound with unbindService()
-        return allowRebind;
-    }
-    @Override
-    public void onRebind(Intent intent) {
-        // A client is binding to the service with bindService(),
-        // after onUnbind() has already been called
-    }
-    @Override
-    public void onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
-    }
-    Runnable mStatusChecker = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                actions(); //this function can change value of mInterval.
-            } finally {
-                // 100% guarantee that this always happens, even if
-                // your update method throws an exception
-                serviceHandler.postDelayed(mStatusChecker, 10000);
-            }
-        }
-    };
 
-    public boolean insidePolygon(LatLng p, MyPolygon shape) {
-        MyLine ray = new MyLine(p, new LatLng(minLat(shape)-1, minLong(shape)-1));
-        int intersections = 0;
-        for(int i = 0; i < shape.lines.size(); i++) {
-            if(doIntersect(ray, shape.lines.get(i))) {
-                intersections++;
-            }
-        }
-        if(intersections % 2 == 0) { // outside
-            return false;
-        } else { // inside
-            return true;
-        }
-    }
-    public boolean doIntersect(MyLine il1, MyLine il2) {
 
-        if(il1.insertIntoEquation(il2.p1) > 0 == il1.insertIntoEquation(il2.p2) > 0) {
-            //does not intersect
-            return false;
-        }
-
-        if(il2.insertIntoEquation(il1.p1) > 0 == il2.insertIntoEquation(il1.p2) > 0) {
-            //does not intersect
-            return false;
-        }
-
-        if((il1.a * il2.b) - (il2.a * il1.b) == 0.0) {
-            // collinear
-            return false;
-        }
-
-        return true;
-    }
-    public double minLat(MyPolygon p) {
-        double minLat = p.polygon_points.get(0).latitude;
-        for(int i = 0; i < p.polygon_points.size(); i++) {
-            if(p.polygon_points.get(i).latitude < minLat) {
-                minLat = p.polygon_points.get(i).latitude;
-            }
-        }
-        return minLat;
+    private void handleNow() {
+        Log.d(TAG, "Short lived task is done.");
     }
 
-    public double minLong(MyPolygon p) {
-        double minLong = p.polygon_points.get(0).longitude;
-        for(int i = 0; i < p.polygon_points.size(); i++) {
-            if(p.polygon_points.get(i).longitude < minLong) {
-                minLong = p.polygon_points.get(i).longitude;
-            }
-        }
-        return minLong;
+    private void sendRegistrationToServer(String token) {
+        // TODO: Implement this method to send token to your app server.
     }
-    NotificationManagerCompat notificationManagerCompat;
-    Notification notification;
 
-    public void actions() {
-        Log.d("1122", "in action");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_menu_gallery)
-                .setContentTitle("hi there")
-                .setContentText("uwu")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        RetrofitService retrofitService = new RetrofitService();
-        ZonePointApi zoneApi = retrofitService.getRetrofit().create(ZonePointApi.class);
-        DeviceApi deviceApi = retrofitService.getRetrofit().create(DeviceApi.class);
-        SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
-        Long user_id = pref.getLong("user_id", 0);
-        List<Device> devices = new ArrayList<>();
-        deviceApi.getAllDevicesForUser(token, user_id)
-                .enqueue(new retrofit2.Callback<List<Device>>() {
-                    @Override
-                    public void onResponse(Call<List<Device>> call, Response<List<Device>> response) {
+    private void sendNotification(String messageBody) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_IMMUTABLE);
 
-                        response.body().forEach(o -> {
-                            if(o.getFk_zone_id() != null)
-                                devices.add(o);
-                        });
-                        if(devices.size() > 0) {
-                            for (Device d : devices) {
-                                zoneApi.getZonePointsForZone(token, d.getFk_zone_id())
-                                        .enqueue(new retrofit2.Callback<List<ZonePoint>>() {
-                                            @Override
-                                            public void onResponse(Call<List<ZonePoint>> call, Response<List<ZonePoint>> response) {
-                                                if(response.body() != null) {
-                                                    Log.d("1122", response.body().toString());
+        String channelId = "fcm_default_channel";
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setContentTitle("FCM Message")
+                        .setSmallIcon(R.drawable.ic_baseline_timeline_24)
+                        .setContentText(messageBody)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
 
-                                                    List<LatLng> polygonPoints = new ArrayList<>();
-                                                    for (ZonePoint zonePoint : response.body()) {
-                                                        polygonPoints.add(new LatLng(zonePoint.getLatitude(), zonePoint.getLongitude()));
-                                                    }
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel(channelId,
+                "Channel human readable title",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(channel);
 
-                                                    MyPolygon polygon = new MyPolygon(polygonPoints);
-
-                                                    NotificationChannel channel = new NotificationChannel("hi", "mychannel", NotificationManager.IMPORTANCE_DEFAULT);
-                                                    NotificationManager manager = getSystemService(NotificationManager.class);
-                                                    manager.createNotificationChannel(channel);
-                                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "hi")
-                                                            .setSmallIcon(R.drawable.ic_menu_gallery)
-                                                            .setContentTitle("title")
-                                                            .setContentText("text uwu");
-                                                    notification = builder.build();
-                                                    notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
-                                                    notificationManagerCompat.notify(1, notification);
-
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<List<ZonePoint>> call, Throwable t) {
-
-                                            }
-                                        });
-                            }
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<Device>> call, Throwable t) {
-
-                    }
-                });
+        notificationManager.notify(123, notificationBuilder.build());
     }
 
 
-    private Looper serviceLooper;
-    private ServiceHandler serviceHandler;
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler(Looper looper) {
-            super(looper);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            // Normally we would do some work here, like download a file.
-            // For our sample, we just sleep for 5 seconds.
-            try {
-
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                // Restore interrupt status.
-                Thread.currentThread().interrupt();
-            }
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
-            stopSelf(msg.arg1);
-        }
-
-
-    }
 }

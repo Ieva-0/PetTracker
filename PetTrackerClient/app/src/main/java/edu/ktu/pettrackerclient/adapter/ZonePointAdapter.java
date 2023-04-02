@@ -3,7 +3,6 @@ package edu.ktu.pettrackerclient.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,43 +11,47 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import edu.ktu.pettrackerclient.GpsActivity;
+import edu.ktu.pettrackerclient.BottomSheet;
 import edu.ktu.pettrackerclient.R;
-import edu.ktu.pettrackerclient.model.Device;
 import edu.ktu.pettrackerclient.model.Zone;
-import edu.ktu.pettrackerclient.retrofit.DeviceApi;
+import edu.ktu.pettrackerclient.model.ZonePoint;
+import edu.ktu.pettrackerclient.retrofit.MyMethod;
 import edu.ktu.pettrackerclient.retrofit.RetrofitService;
 import edu.ktu.pettrackerclient.retrofit.ZoneApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
-    private List<Zone> zoneList;
+public class ZonePointAdapter extends RecyclerView.Adapter<ZonePointHolder> {
+    private List<ZonePoint> zonePointList;
     private Context ctx;
-    public ZoneAdapter(List<Zone> zoneList, Context ctx) {
-        this.zoneList = zoneList;
+
+    BottomSheet sheet;
+    public ZonePointAdapter(List<ZonePoint> zonePointList, Context ctx, BottomSheet sheet) {
+        this.zonePointList = zonePointList;
         this.ctx = ctx;
+        this.sheet = sheet;
     }
 
     @NonNull
     @Override
-    public ZoneHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ZonePointHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.zone_item, parent, false);
+                .inflate(R.layout.zone_point_item, parent, false);
 
-        return new ZoneHolder(view);
+        return new ZonePointHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ZoneHolder holder, int position) {
-        Zone zone = zoneList.get(position);
-        holder.name.setText(zone.getName());
-        holder.devices.setText(String.valueOf(zone.getId()));
+    public void onBindViewHolder(@NonNull ZonePointHolder holder, int position) {
+        ZonePoint zonePoint = zonePointList.get(position);
+        holder.name.setText(String.valueOf(zonePoint.getLongitude()));
+        holder.id.setText(String.valueOf(zonePoint.getList_index() + 1));
 
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,14 +66,10 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
 //                Intent intent = new Intent(ctx, GpsActivity.class);
 //                intent.putExtra("device_id", device.getId());
 //                ctx.startActivity(intent);
-                Toast.makeText(ctx, "clicked zone" + zone.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, "clicked zone" + zonePoint.getList_index(), Toast.LENGTH_SHORT).show();
             }
         });
         RetrofitService retrofitService = new RetrofitService();
-        ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
-        SharedPreferences pref = ctx.getSharedPreferences("MyPref", 0); // 0 - for private mode
-        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
-        Long user_id = pref.getLong("user_id", 0);
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,21 +78,12 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
                 builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        zoneApi.deleteZone(token, zone.getId())
-                                .enqueue(new Callback<Void>() {
-                                    @Override
-                                    public void onResponse(Call<Void> call, Response<Void> response) {
-                                        Toast.makeText(view.getContext(), "deleted successfully", Toast.LENGTH_SHORT).show();
-                                        zoneList.remove(holder.getAdapterPosition());
-                                        notifyItemRangeChanged(holder.getAdapterPosition(), zoneList.size());
-                                    }
+                        sheet.executeRemove(holder.getAdapterPosition());
+                        zonePointList.remove(holder.getAdapterPosition());
+//                        notifyItemRangeChanged(holder.getAdapterPosition(), zonePointList.size());
+                        notifyItemRangeRemoved(0, zonePointList.size()+1);
+                        notifyItemRangeInserted(0, zonePointList.size());
 
-                                    @Override
-                                    public void onFailure(Call<Void> call, Throwable t) {
-                                        Toast.makeText(view.getContext(), "failed", Toast.LENGTH_SHORT).show();
-                                        Log.d("1122", t.toString());
-                                    }
-                                });
 
                     }
                 });
@@ -117,12 +107,22 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
 
     @Override
     public int getItemCount() {
-        return zoneList.size();
+        return zonePointList.size();
     }
 
-    public void setItems(List<Zone> items) {
-        zoneList = items;
+    public void setItems(List<ZonePoint> items) {
+        zonePointList = items;
     }
+
+//    private MyMethod mth;
+//
+//    public void executeLater(MyMethod mth) {
+//        this.mth= mth;
+//    }
+//
+//    public void executeNow() {
+//        mth.removePoint(0);
+//    }
 
 
 }
