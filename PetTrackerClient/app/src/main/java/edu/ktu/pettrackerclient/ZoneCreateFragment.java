@@ -151,11 +151,18 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ZoneCreateRequest req = new ZoneCreateRequest();
+                        Zone zone = new Zone();
                         if (old_zone != null && zone_id != null) {
                             req.setId(old_zone.getId());
+                            zone.setId(old_zone.getId());
                         }
                         req.setZone_name(input.getText().toString());
+                        zone.setName(input.getText().toString());
                         req.setUser_id(pref.getLong("user_id", 0));
+                        zone.setFk_user_id(pref.getLong("user_id", 0));
+
+                        List<ZonePoint> savePoints = convertForSave(zone);
+                        req.setPoints(savePoints);
 //                        Zone saveZone = new Zone();
 //                        if (old_zone != null && zone_id != null) {
 //                            saveZone.setId(old_zone.getId());

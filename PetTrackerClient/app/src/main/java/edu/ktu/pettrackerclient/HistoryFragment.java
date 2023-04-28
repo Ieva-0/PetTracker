@@ -148,7 +148,7 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
                     line = googleMap.addPolyline(opts);
                     line.setTag("B");
                     stylePolyline(line);
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationHistory.get(locationHistory.size()-1).getLatitude(), locationHistory.get(locationHistory.size()-1).getLongitude()), 15));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationHistory.get(0).getLatitude(), locationHistory.get(0).getLongitude()), 15));
 
                 } else {
                     noEntries.setVisibility(View.VISIBLE);

@@ -121,7 +121,8 @@ public class LocationEntryController {
 									System.out.println(events);
 									Event latestEvent = null;
 									for(Event e : events) {
-										if(e.getFk_group_id().equals(group.getId()) && e.getFk_zone_id().equals(zone.getId()) && e.getFk_device_id().equals(device.getId())) {
+										if((e.getFk_group_id() == null || group.getId() == null || e.getFk_group_id().equals(group.getId())) && e.getFk_zone_id().equals(zone.getId()) && e.getFk_device_id().equals(device.getId())) {
+											
 											if(latestEvent == null || latestEvent.getTimestamp() < e.getTimestamp()) {
 												latestEvent = e;
 											}

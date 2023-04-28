@@ -31,7 +31,7 @@ public class RetrofitService {
         }).create();
         retrofit = new Retrofit.Builder()
 //                .baseUrl("http://192.168.1.103:9002")
-                .baseUrl(" https://88ca-94-244-71-185.eu.ngrok.io")
+                .baseUrl("https://8665-94-244-71-185.eu.ngrok.io")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }

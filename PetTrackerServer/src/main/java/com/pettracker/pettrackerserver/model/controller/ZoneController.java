@@ -65,6 +65,11 @@ public class ZoneController {
 			zone.setName(zonereq.getZone_name());
 			zone = zonedao.save(zone);
 			List<ZonePoint> points = zonereq.getPoints();
+			if(points.get(0).getFk_zone_id() == null ) {
+				for(ZonePoint p : points) {
+					p.setFk_zone_id(zone.getId());
+				}
+			}
 			zonepointdao.saveAllZonePoints(points);
 		}
 		return zone;
