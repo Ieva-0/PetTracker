@@ -12,9 +12,9 @@ public class LocationEntryDao {
 	@Autowired
 	private LocationEntryRepository repository;
 	
-	public List<LocationEntry> locationHistoryForDevice(Long device) {
+	public List<LocationEntry> locationHistoryForDevice(Long device_id) {
 		List<LocationEntry> locationEntries = new ArrayList<>();
-		Streamable.of(repository.entryHistoryForDevice(device)).forEach(locationEntries::add);
+		Streamable.of(repository.entryHistoryForDevice(device_id)).forEach(locationEntries::add);
 		return locationEntries;
 	}
 	

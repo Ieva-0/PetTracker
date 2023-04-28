@@ -24,17 +24,17 @@ public class PetTrackerServerApplication {
 
 	public static void main(String[] args) {
 //		SpringApplication.run(PetTrackerServerApplication.class, args);
-		FirebaseOptions options;
-		try {
-			String value_name = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-			System.out.println(value_name);
-			options = FirebaseOptions.builder().setCredentials(GoogleCredentials.getApplicationDefault()).build();
-			FirebaseApp.initializeApp(options);
-		} catch(RuntimeException e) {
-			e.printStackTrace();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
+//		FirebaseOptions options;
+//		try {
+//			String value_name = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+//			System.out.println(value_name);
+//			options = FirebaseOptions.builder().setCredentials(GoogleCredentials.getApplicationDefault()).build();
+//			FirebaseApp.initializeApp(options);
+//		} catch(RuntimeException e) {
+//			e.printStackTrace();
+//		} catch(IOException e) {
+//			e.printStackTrace();
+//		}
 		ConfigurableApplicationContext run = SpringApplication.run(PetTrackerServerApplication.class, args);
 		PetTrackerServerApplication app = run.getBean(PetTrackerServerApplication.class);
 //        app.run();

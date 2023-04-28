@@ -168,22 +168,22 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
                                     @Override
                                     public void onResponse(Call<Zone> call, Response<Zone> response) {
                                         if (response.isSuccessful()) {
-                                            List<ZonePoint> savePoints = convertForSave(response.body());
-                                            zonePointApi.addZonePoints(token, savePoints)
-                                                    .enqueue(new Callback<List<ZonePoint>>() {
-                                                        @Override
-                                                        public void onResponse(Call<List<ZonePoint>> call, Response<List<ZonePoint>> response) {
-                                                            Toast.makeText(getContext(), "created zone successfully", Toast.LENGTH_SHORT).show();
-                                                            Navigation.findNavController(view).navigate(R.id.action_drawerNav_createZone_to_drawerNav_zoneList);
-                                                        }
-
-                                                        @Override
-                                                        public void onFailure(Call<List<ZonePoint>> call, Throwable t) {
-                                                            Toast.makeText(getContext(), "Failed to load zones", Toast.LENGTH_LONG).show();
-                                                            Log.d("1122", String.valueOf(t));
-
-                                                        }
-                                                    });
+                                              Navigation.findNavController(view).navigate(R.id.action_drawerNav_createZone_to_drawerNav_zoneList);
+//                                            List<ZonePoint> savePoints = convertForSave(response.body());
+//                                            zonePointApi.addZonePoints(token, savePoints)
+//                                                    .enqueue(new Callback<List<ZonePoint>>() {
+//                                                        @Override
+//                                                        public void onResponse(Call<List<ZonePoint>> call, Response<List<ZonePoint>> response) {
+//                                                            Toast.makeText(getContext(), "created zone successfully", Toast.LENGTH_SHORT).show();
+//                                                        }
+//
+//                                                        @Override
+//                                                        public void onFailure(Call<List<ZonePoint>> call, Throwable t) {
+//                                                            Toast.makeText(getContext(), "Failed to load zones", Toast.LENGTH_LONG).show();
+//                                                            Log.d("1122", String.valueOf(t));
+//
+//                                                        }
+//                                                    });
                                         }
                                     }
 
@@ -193,7 +193,6 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
                                         Log.d("1122", String.valueOf(t));
                                     }
                                 });
-                        Navigation.findNavController(view).navigate(R.id.action_drawerNav_createZone_to_drawerNav_zoneList);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

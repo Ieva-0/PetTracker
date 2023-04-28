@@ -77,9 +77,9 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-		try {
-			// This registration token comes from the client FCM SDKs.
-			String registrationToken = "cnbYxhIdTYyCDL4bzuDQmV:APA91bEri00liWE__rKnAffnm8dHTut3kGFxQNjVjg4YS1gTNBXGGSPiPklpqvKl4A43e5yO-Kav8DL55PJ8sJKjx7LPbZCMAkbUnMquEeAL-agj685AtZaKns8OyZ00xl9mAtgxxuCi";
+//		try {
+//			// This registration token comes from the client FCM SDKs.
+//			String registrationToken = "cnbYxhIdTYyCDL4bzuDQmV:APA91bEri00liWE__rKnAffnm8dHTut3kGFxQNjVjg4YS1gTNBXGGSPiPklpqvKl4A43e5yO-Kav8DL55PJ8sJKjx7LPbZCMAkbUnMquEeAL-agj685AtZaKns8OyZ00xl9mAtgxxuCi";
 
 			// See documentation on defining a message payload.
 //			Message message = Message.builder().setNotification(Notification.builder()
@@ -88,23 +88,23 @@ public class AuthController {
 //			        .build())
 //					.setToken(registrationToken).build();
 			
-		    Notification.Builder builder = Notification.builder();
-		    Message message = Message.builder()
-		            .setNotification(builder.build())
-		            .putData("title", "abc")
-		            .putData("body", "abc")
-		            .setToken(registrationToken)
-		            .build();
+//		    Notification.Builder builder = Notification.builder();
+//		    Message message = Message.builder()
+//		            .setNotification(builder.build())
+//		            .putData("title", "abc")
+//		            .putData("body", "abc")
+//		            .setToken(registrationToken)
+//		            .build();
 
 			// Send a message to the device corresponding to the provided
 			// registration token.
-			String response = FirebaseMessaging.getInstance().send(message);
-			System.out.println("Successfully sent message: " + response);
+//			String response = FirebaseMessaging.getInstance().send(message);
+//			System.out.println("Successfully sent message: " + response);
 
-		} catch (FirebaseMessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (FirebaseMessagingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		// Response is a message ID string.
 		if (!userRepository.existsByUsername(loginRequest.getUsername())) {

@@ -56,8 +56,7 @@ public class DeviceEditFragment extends Fragment implements AdapterView.OnItemSe
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_device_edit, container, false);
         Long device_id = getArguments().getLong("device_id");
-        zone_select = v.findViewById(R.id.deviceEdit_zonePicker);
-        zone_select.setOnItemSelectedListener(this);
+
 
         save_device = v.findViewById(R.id.deviceEdit_btn);
         device_name = v.findViewById(R.id.deviceEdit_name);
