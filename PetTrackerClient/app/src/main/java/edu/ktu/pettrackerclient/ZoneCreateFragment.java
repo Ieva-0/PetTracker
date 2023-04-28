@@ -12,7 +12,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
@@ -21,7 +20,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -35,19 +33,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ktu.pettrackerclient.adapter.ZonePointAdapter;
 import edu.ktu.pettrackerclient.model.MyLine;
 import edu.ktu.pettrackerclient.model.MyPolygon;
 import edu.ktu.pettrackerclient.model.Zone;
+import edu.ktu.pettrackerclient.model.ZoneCreateRequest;
 import edu.ktu.pettrackerclient.model.ZonePoint;
-import edu.ktu.pettrackerclient.retrofit.MyMethod;
+import edu.ktu.pettrackerclient.retrofit.ZonePointDelegation;
 import edu.ktu.pettrackerclient.retrofit.RetrofitService;
 import edu.ktu.pettrackerclient.retrofit.ZoneApi;
 import edu.ktu.pettrackerclient.retrofit.ZonePointApi;
@@ -69,10 +65,13 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         super.onCreate(savedInstanceState);
 
     }
+
     FloatingActionButton save;
     FloatingActionButton openbottom;
 
-    boolean editting;
+    Long zone_id;
+    Zone old_zone;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,97 +82,98 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
 
         save = v.findViewById(R.id.zoneCreate_Btn);
         openbottom = v.findViewById(R.id.modifyPoints_btn);
-        getParentFragmentManager().setFragmentResultListener("requestKey", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                Log.d("1122", "hi there im back");
-            }
-        });
         openbottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<ZonePoint> points = convertForSave(new Zone());
+                Log.d("1122", points.toString());
+                BottomSheet bottomSheet = new BottomSheet(points);
+                bottomSheet.setRemove(new ZonePointDelegation() {
                     @Override
-                    public void onClick(View v)
-                    {
-//                        saved_points.remove(saved_points.size()-1);
-                        List<ZonePoint> points = convertForSave(new Zone());
-                        Log.d("1122", points.toString());
-                        BottomSheet bottomSheet = new BottomSheet(points);
-                        bottomSheet.setRemove(new MyMethod() {
-                            @Override
-                            public void myMethod(int index) {
-                                List<LatLng> points = updatePoints();
-                                points.remove(index);
-                                if(canDraw(points)) {
-                                    marker_references.get(index).remove();
-                                    marker_references.remove(index);
-                                    saved_points = updatePoints();
-                                    if(saved_points.size() != 0) {
-                                        map_polygon.setPoints(saved_points);
-                                    }
-                                } else {
-                                    Toast.makeText(getContext(), "cannot remove this marker. zone borders can't intersect.", Toast.LENGTH_SHORT).show();
-                                }
+                    public void myMethod(int index) {
+                        List<LatLng> points = updatePoints();
+                        points.remove(index);
+                        if (canDraw(points)) {
+                            marker_references.get(index).remove();
+                            marker_references.remove(index);
+                            saved_points = updatePoints();
+                            if (saved_points.size() != 0) {
+                                map_polygon.setPoints(saved_points);
                             }
+                        } else {
+                            Toast.makeText(getContext(), "cannot remove this marker. zone borders can't intersect.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-                        });
-                        bottomSheet.setUpdate(new MyMethod() {
-                            @Override
-                            public void myMethod(int index) {
-                                for(int i = 0; i < marker_references.size(); i++) {
-                                    marker_references.get(i).setIcon(BitmapDescriptorFactory.fromBitmap(icon(i+1)));
-                                }
-                                saved_points = updatePoints();
-                                if(saved_points.size() >= 3) {
-                                    map_polygon.setPoints(saved_points);
-                                } else {
-                                    if(map_polygon != null) {
-                                        map_polygon.remove();
-                                    }
-                                }
+                });
+                bottomSheet.setUpdate(new ZonePointDelegation() {
+                    @Override
+                    public void myMethod(int index) {
+                        for (int i = 0; i < marker_references.size(); i++) {
+                            marker_references.get(i).setIcon(BitmapDescriptorFactory.fromBitmap(icon(i + 1)));
+                        }
+                        saved_points = updatePoints();
+                        if (saved_points.size() >= 3) {
+                            map_polygon.setPoints(saved_points);
+                        } else {
+                            if (map_polygon != null) {
+                                map_polygon.remove();
                             }
-                        });
-                        bottomSheet.show(getActivity().getSupportFragmentManager(),
-                                "ModalBottomSheet");
+                        }
                     }
                 });
+                bottomSheet.show(getActivity().getSupportFragmentManager(),
+                        "ModalBottomSheet");
+            }
+        });
 
         RetrofitService retrofitService = new RetrofitService();
         ZonePointApi zonePointApi = retrofitService.getRetrofit().create(ZonePointApi.class);
         ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
         SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        String token = pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(saved_points.size() < 3) {
+                    Toast.makeText(getContext(), "Not enough points for zone, please choose at least three", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Enter a name for your zone");
-
-                // Set up the input
                 final EditText input = new EditText(getContext());
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
+                if (zone_id != null && old_zone != null) {
+                    input.setText(old_zone.getName());
+                }
                 builder.setView(input);
-
-                // Set up the buttons
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Zone saveZone = new Zone();
-                        saveZone.setName(input.getText().toString());
-                        saveZone.setFk_user_id(pref.getLong("user_id", 0));
-                        zoneApi.addZone(token, saveZone)
+                        ZoneCreateRequest req = new ZoneCreateRequest();
+                        if (old_zone != null && zone_id != null) {
+                            req.setId(old_zone.getId());
+                        }
+                        req.setZone_name(input.getText().toString());
+                        req.setUser_id(pref.getLong("user_id", 0));
+//                        Zone saveZone = new Zone();
+//                        if (old_zone != null && zone_id != null) {
+//                            saveZone.setId(old_zone.getId());
+//                        }
+//                        saveZone.setName(input.getText().toString());
+//                        saveZone.setFk_user_id(pref.getLong("user_id", 0));
+
+                        zoneApi.addZone(token, req)
                                 .enqueue(new Callback<Zone>() {
                                     @Override
                                     public void onResponse(Call<Zone> call, Response<Zone> response) {
-                                        Log.d("1122", String.valueOf(response.body()));
-                                        if(response.isSuccessful()) {
+                                        if (response.isSuccessful()) {
                                             List<ZonePoint> savePoints = convertForSave(response.body());
-                                            Log.d("1122", "pre-req" + savePoints);
                                             zonePointApi.addZonePoints(token, savePoints)
                                                     .enqueue(new Callback<List<ZonePoint>>() {
                                                         @Override
                                                         public void onResponse(Call<List<ZonePoint>> call, Response<List<ZonePoint>> response) {
-                                                            Log.d("1122", String.valueOf(response.body()));
-                                                            Toast.makeText(getContext(),  "created zone successfully", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(getContext(), "created zone successfully", Toast.LENGTH_SHORT).show();
                                                             Navigation.findNavController(view).navigate(R.id.action_drawerNav_createZone_to_drawerNav_zoneList);
                                                         }
 
@@ -193,8 +193,7 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
                                         Log.d("1122", String.valueOf(t));
                                     }
                                 });
-
-
+                        Navigation.findNavController(view).navigate(R.id.action_drawerNav_createZone_to_drawerNav_zoneList);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -220,6 +219,9 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         mapFragment.getMapAsync(this);
 
         saved_points = new ArrayList<>();
+
+
+
         return v;
     }
 
@@ -228,32 +230,89 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         this.map = map;
         this.map.setOnMapClickListener(this);
         this.map.setOnMarkerDragListener(this);
+
+        RetrofitService retrofitService = new RetrofitService();
+        SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String token = pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
+        try {
+            zone_id = getArguments().getLong("zone_id");
+        } catch (Exception e) {
+            Log.d("1122", "no zone id");
+        }
+
+        if (zone_id != null) {
+
+            ZonePointApi zonepointApi = retrofitService.getRetrofit().create(ZonePointApi.class);
+            zonepointApi.getZonePointsForZone(token, zone_id).enqueue(new Callback<List<ZonePoint>>() {
+                @Override
+                public void onResponse(Call<List<ZonePoint>> call, Response<List<ZonePoint>> response) {
+                    if (response.isSuccessful()) {
+                        response.body().forEach(point -> {
+                            LatLng p = new LatLng(point.getLatitude(), point.getLongitude());
+                            marker_references.add(map.addMarker(
+                                    new MarkerOptions()
+                                            .position(p)
+                                            .icon(BitmapDescriptorFactory.fromBitmap(icon(marker_references.size() + 1)))
+                                            .draggable(true)));
+                            saved_points.add(p);
+                        });
+                        if (saved_points.size() >= 3) {
+                            map_polygon = map.addPolygon(new PolygonOptions()
+                                    .addAll(saved_points)
+                                    .strokeColor(Color.RED)
+                                    .fillColor(Color.BLUE));
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<ZonePoint>> call, Throwable t) {
+                    Log.d("1122", "failed to get zone points");
+                }
+            });
+            ZoneApi zoneapi = retrofitService.getRetrofit().create(ZoneApi.class);
+
+            zoneapi.getZoneById(token, zone_id).enqueue(new Callback<Zone>() {
+                @Override
+                public void onResponse(Call<Zone> call, Response<Zone> response) {
+                    if (response.isSuccessful()) {
+                        old_zone = response.body();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Zone> call, Throwable t) {
+
+                }
+            });
+        }
     }
+
     List<LatLng> saved_points;
     MyPolygon current_polygon;
     Polygon map_polygon;
-
     List<Marker> marker_references;
 
     public void printMarkers() {
-        if(marker_references != null) {
-            for(Marker m : marker_references) {
+        if (marker_references != null) {
+            for (Marker m : marker_references) {
                 Log.d("1122", "| " + m.getPosition().latitude + ", " + m.getPosition().longitude + " | ");
             }
         }
     }
+
     @Override
     public void onMapClick(LatLng point) {
-        Log.d("1122", "clicked on lat:" + point.latitude +", lng:" + point.longitude);
-        Bitmap bmp = icon(marker_references.size()+1);
-        if(marker_references.size() < 3 ) {
+        Log.d("1122", "clicked on lat:" + point.latitude + ", lng:" + point.longitude);
+        Bitmap bmp = icon(marker_references.size() + 1);
+        if (marker_references.size() < 3) {
             marker_references.add(map.addMarker(
                     new MarkerOptions()
                             .position(point)
                             .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                             .draggable(true)));
             saved_points = updatePoints();
-            if(marker_references.size() == 3) {
+            if (marker_references.size() == 3) {
                 map_polygon = map.addPolygon(new PolygonOptions()
                         .addAll(saved_points)
                         .strokeColor(Color.RED)
@@ -262,7 +321,7 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         } else {
             List<LatLng> current_points = updatePoints();
             current_points.add(point);
-            if(canDraw(current_points)) {
+            if (canDraw(current_points)) {
                 marker_references.add(map.addMarker(
                         new MarkerOptions()
                                 .position(point)
@@ -296,19 +355,20 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
 
     public List<LatLng> updatePoints() {
         List<LatLng> points = new ArrayList<LatLng>();
-        for(Marker m : marker_references) {
+        for (Marker m : marker_references) {
             points.add(m.getPosition());
         }
         return points;
     }
+
     public boolean canDraw(List<LatLng> points) {
         MyPolygon new_polygon = new MyPolygon(points);
         boolean canDraw = true;
-        for(int ii = 0; ii < new_polygon.lines.size(); ii++) {
-            for(int jj = 0; jj < new_polygon.lines.size(); jj++) {
-                if(ii!=jj && Math.abs(ii-jj) > 1 && Math.abs(ii-jj) != new_polygon.lines.size()-1){ // not the same line, not adjacent lines, not the first and last(they're also adjacent)
+        for (int ii = 0; ii < new_polygon.lines.size(); ii++) {
+            for (int jj = 0; jj < new_polygon.lines.size(); jj++) {
+                if (ii != jj && Math.abs(ii - jj) > 1 && Math.abs(ii - jj) != new_polygon.lines.size() - 1) { // not the same line, not adjacent lines, not the first and last(they're also adjacent)
                     boolean intersect = doIntersect(new_polygon.lines.get(ii), new_polygon.lines.get(jj));
-                    if(intersect) {
+                    if (intersect) {
                         canDraw = false;
                     }
                 }
@@ -316,33 +376,35 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
         }
         return canDraw;
     }
+
     public List<ZonePoint> convertForSave(Zone zone) {
         List<ZonePoint> result = new ArrayList<>();
         Log.d("1122", String.valueOf(saved_points.size()));
-        for(int i = 0; i < saved_points.size(); i++) {
+        for (int i = 0; i < saved_points.size(); i++) {
             ZonePoint pt = new ZonePoint();
             pt.setLatitude(saved_points.get(i).latitude);
             pt.setLongitude(saved_points.get(i).longitude);
             pt.setList_index(i);
-            if(zone.getId() != null)
-                 pt.setFk_zone_id(zone.getId());
+            if (zone.getId() != null)
+                pt.setFk_zone_id(zone.getId());
             result.add(pt);
         }
 
         return result;
     }
+
     public boolean doIntersect(MyLine l1, MyLine l2) {
         MyLine il1 = new MyLine(l1.p1, l1.p2);
-        if(il1.insertIntoEquation(l2.p1) > 0 == il1.insertIntoEquation(l2.p2) > 0) {
+        if (il1.insertIntoEquation(l2.p1) > 0 == il1.insertIntoEquation(l2.p2) > 0) {
             //does not intersect
             return false;
         }
         MyLine il2 = new MyLine(l2.p1, l2.p2);
-        if(il2.insertIntoEquation(l1.p1) > 0 == il2.insertIntoEquation(l1.p2) > 0) {
+        if (il2.insertIntoEquation(l1.p1) > 0 == il2.insertIntoEquation(l1.p2) > 0) {
             //does not intersect
             return false;
         }
-        if((il1.a * il2.b) - (il2.a * il1.b) == 0.0) {
+        if ((il1.a * il2.b) - (il2.a * il1.b) == 0.0) {
             // collinear
             return false;
         }
@@ -350,13 +412,14 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     @Override
-    public void onMarkerDrag(@NonNull Marker marker) { }
+    public void onMarkerDrag(@NonNull Marker marker) {
+    }
 
     @Override
     public void onMarkerDragEnd(@NonNull Marker marker) {
         Log.d("1122", "dragged end");
         List<LatLng> newPoints = updatePoints();
-        if(canDraw(newPoints)) {
+        if (canDraw(newPoints)) {
             saved_points = updatePoints();
             map_polygon.setPoints(saved_points);
         } else {
@@ -367,11 +430,12 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     public void restoreMarkers() {
-        for(int i= 0; i < saved_points.size(); i++) {
+        for (int i = 0; i < saved_points.size(); i++) {
             marker_references.get(i).setPosition(saved_points.get(i));
         }
     }
 
     @Override
-    public void onMarkerDragStart(@NonNull Marker marker) { }
+    public void onMarkerDragStart(@NonNull Marker marker) {
+    }
 }

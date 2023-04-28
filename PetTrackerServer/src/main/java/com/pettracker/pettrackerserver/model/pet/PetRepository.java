@@ -14,6 +14,9 @@ public interface PetRepository extends CrudRepository<Pet, Long>, JpaRepository<
 	@Query(value = "SELECT * FROM pet WHERE fk_user_id=?1", nativeQuery = true)
 	Collection<Pet> getAllPetsForUser(Long user_id);
 	
+	@Query(value = "SELECT * FROM pet WHERE fk_device_id=?1", nativeQuery = true)
+	Optional<Pet> getPetByDevice(Long device_id);
+	
 	void deleteById(Long pet_id);
 
 	Optional<Pet> findByName(String name);

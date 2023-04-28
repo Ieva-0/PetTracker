@@ -15,7 +15,6 @@ public class Device {
 	private String name;
 	private String password;
 	private Long fk_user_id;
-	private Long fk_zone_id;
     public Long getId() {
         return id;
     }
@@ -48,13 +47,6 @@ public class Device {
 		this.fk_user_id = fk_user_id;
 	}
 
-	public Long getFk_zone_id() {
-		return fk_zone_id;
-	}
-
-	public void setFk_zone_id(Long fk_zone_id) {
-		this.fk_zone_id = fk_zone_id;
-	}
 
 	public String getPassword() {
 		return password;

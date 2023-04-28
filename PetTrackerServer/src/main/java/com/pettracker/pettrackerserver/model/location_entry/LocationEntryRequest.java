@@ -13,7 +13,7 @@ public class LocationEntryRequest {
     private String username;
     private String device_name;
     private String device_password;
-    private double lattitude;
+    private double latitude;
     private double longitude;
 	public String getUsername() {
 		return username;
@@ -33,11 +33,11 @@ public class LocationEntryRequest {
 	public void setDevice_password(String device_password) {
 		this.device_password = device_password;
 	}
-	public double getLattitude() {
-		return lattitude;
+	public double getLatitude() {
+		return latitude;
 	}
-	public void setLattitude(double lattitude) {
-		this.lattitude = lattitude;
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
 	}
 	public double getLongitude() {
 		return longitude;

@@ -5,6 +5,10 @@ import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,6 +21,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.FlingAnimation;
@@ -26,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -34,6 +40,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.Arrays;
+
 import edu.ktu.pettrackerclient.model.LocationEntry;
 import edu.ktu.pettrackerclient.retrofit.LocationEntryApi;
 import edu.ktu.pettrackerclient.retrofit.RetrofitService;
@@ -41,21 +49,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RadarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RadarFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     RetrofitService retro;
     LocationEntryApi location_api;
     LocationEntry latest;
@@ -66,35 +60,14 @@ public class RadarFragment extends Fragment {
     Button btn;
     private LocationEntry locationEntry;
     private LocationEntry currentLocation;
+
     public RadarFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ThirdFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RadarFragment newInstance(String param1, String param2) {
-        RadarFragment fragment = new RadarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -110,19 +83,23 @@ public class RadarFragment extends Fragment {
         currentLocation = new LocationEntry();
         currentLocation.setLatitude(54.926707);
         currentLocation.setLongitude(23.938306);
-
+        old_angle = 0f;
         View v = inflater.inflate(R.layout.fragment_radar, container, false);
 
         img = v.findViewById(R.id.imageDraw);
         img.bringToFront();
-//        String device_id = this.getArguments().getString("device_id");
-//        Toast.makeText(getContext(), "device id is " + device_id, Toast.LENGTH_SHORT).show();
-
-
+        accelerometerValues = new float[3];
+        magneticValues = new float[3];
+        rotationValues = new float[3];
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sens = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         counter = 0;
-
+        SensorManager sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+        Sensor magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        Sensor accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(mLightSensorListener, magneticSensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(mLightSensorListener, accelerometerSensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(mLightSensorListener, sens, SensorManager.SENSOR_DELAY_UI);
         SharedPreferences pref = this.getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
         String token = pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
         retro = new RetrofitService();
@@ -152,61 +129,203 @@ public class RadarFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationManager locationManager;
 
+    float old_angle;
+
+
     private SensorEventListener mLightSensorListener = new SensorEventListener() {
+
+        long last_updated = 0;
+
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if (counter == 20) {
+            long time = System.currentTimeMillis();
+
+            switch (event.sensor.getType()) {
+                case Sensor.TYPE_ACCELEROMETER:
+                    accelerometerValues = event.values.clone();
+//                    Log.d("1122", "values - acc ");
+
+                    break;
+                case Sensor.TYPE_MAGNETIC_FIELD:
+                    magneticValues = event.values.clone();
+//                    Log.d("1122", "values - magn ");
+
+                    break;
+                case Sensor.TYPE_ROTATION_VECTOR:
+                    rotationValues = event.values.clone();
+//                    Log.d("1122", "values - rot ");
+
+                default:
+                    return;
+            }
+//            Log.d("1122", Arrays.toString(event.values));
+            if (time - last_updated > 1000) {
+                last_updated = time;
+                code();
+            }
+
+            if (false) {
+
                 //point a - current
                 //point b - entry
 //                double a = locationEntry.getLongitude() - currentLocation.getLongitude();
 //                double b = currentLocation.getLatitude() - locationEntry.getLatitude();
 //                double c = currentLocation.getLongitude() * locationEntry.getLatitude() - currentLocation.getLatitude() * locationEntry.getLongitude();
-                double m = (Math.toDegrees(Math.atan((locationEntry.getLongitude() - currentLocation.getLongitude()) / (locationEntry.getLatitude() - currentLocation.getLatitude()))) + 360) % 360;
-                Log.d("1122", "m " + String.valueOf(m));
+//                double m = (Math.toDegrees(Math.atan((locationEntry.getLongitude() - currentLocation.getLongitude()) / (locationEntry.getLatitude() - currentLocation.getLatitude()))) + 360) % 360;
+//                Log.d("1122", "m " + String.valueOf(m));
 
+//                double a = locationEntry.getLongitude() - currentLocation.getLongitude();
+//                double b = currentLocation.getLatitude() - locationEntry.getLatitude();
+//                double c = currentLocation.getLongitude() * locationEntry.getLatitude() - currentLocation.getLatitude() * locationEntry.getLongitude();
+//                double m = (Math.toDegrees(Math.atan2(locationEntry.getLongitude() - currentLocation.getLongitude(), locationEntry.getLatitude() - currentLocation.getLatitude())) + 360) % 360;
+//                Log.d("1122", "m " + String.valueOf(m));
+
+                double lat1 = currentLocation.getLatitude();
+                double lon1 = currentLocation.getLongitude();
+                double lat2 = locationEntry.getLatitude();
+                double lon2 = locationEntry.getLongitude();
+                double dLon = Math.toRadians(lon2 - lon1);
+                double y = Math.sin(dLon) * Math.cos(Math.toRadians(lat2));
+                double x = Math.cos(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) -
+                        Math.sin(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(dLon);
+                double bearing = Math.toDegrees(Math.atan2(y, x));
+
+                if (bearing < 0) {
+                    bearing += 360;
+                }
 
                 counter = 0;
-                double x = event.values[0];
-                double y = event.values[1];
-                double z = event.values[2];
-                z = (Math.toDegrees(Math.asin(z)) + 360) % 360;
-                Log.d("1122", "z " + String.valueOf(z));
+                double phonex = event.values[0];
+                double phoney = event.values[1];
+                double phonez = event.values[2];
+                phonez = (Math.toDegrees(Math.asin(phonez)) + 360) % 360;
+                Log.d("1122", "z " + String.valueOf(phonez));
 
-                FlingAnimation flingAnimation = new FlingAnimation(img, DynamicAnimation.ROTATION);
-                flingAnimation.setFriction(0.1f);
-                flingAnimation.setStartVelocity(-100);
-//                flingAnimation.setStartValue((float) z);
-                float minVal = (float) (Math.min(z, m));
-                float maxVal = (float) (Math.max(z, m));
-                flingAnimation.setMinValue((float) minVal);
-                flingAnimation.setMaxValue((float) maxVal );
-                flingAnimation.start();
+                float new_angle = (float) bearing + (float) phonez;
+                float shortestAngle = (float) (((((new_angle - old_angle) % 360) + 540) % 360) - 180);
 
-                Log.d("1122", String.valueOf("x " + Math.toDegrees(Math.asin(x))));
-                Log.d("1122", String.valueOf("y " + Math.toDegrees(Math.asin(y))));
-                Log.d("1122", String.valueOf("z " + Math.toDegrees(Math.asin(z))));
-                Log.d("1122", String.valueOf("cos " + event.values[3]));
+                // Create an ObjectAnimator that will rotate the view
+                ObjectAnimator animator = ObjectAnimator.ofFloat(img, "rotation", old_angle, shortestAngle + old_angle);
+// Set the duration and interpolator of the animation
+                animator.setDuration(1000);
+                animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+// Set the repeat count of the animation to infinite
+                animator.setRepeatCount(0);
+// Set the repeat mode of the animation to reverse
+//                animator.setRepeatMode(ValueAnimator.REVERSE);
+
+// Start the animation
+                animator.addListener(new Animator.AnimatorListener() {
+
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        img.setRotation(new_angle);
+                        old_angle = new_angle;
+                        Log.d("1122", "old angle:" + String.valueOf(new_angle));
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+                    }
+                });
+                animator.start();
+
+//                FlingAnimation flingAnimation = new FlingAnimation(img, DynamicAnimation.ROTATION);
+//                flingAnimation.setFriction(0.1f);
+//                flingAnimation.setStartVelocity(-100);
+////                flingAnimation.setStartValue((float) z);
+//                float minVal = (float) (Math.min(z, m));
+//                float maxVal = (float) (Math.max(z, m));
+//                flingAnimation.setMinValue((float) minVal);
+//                flingAnimation.setMaxValue((float) maxVal );
+//                flingAnimation.start();
+
+//                Log.d("1122", String.valueOf("x " + Math.toDegrees(Math.asin(x))));
+//                Log.d("1122", String.valueOf("y " + Math.toDegrees(Math.asin(y))));
+//                Log.d("1122", String.valueOf("z " + Math.toDegrees(Math.asin(z))));
+//                Log.d("1122", String.valueOf("cos " + event.values[3]));
+// Get the view to be animated
 
 
-
-
-            }
-            else counter++;
+            } else counter++;
         }
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-//            Log.d("1122", sensor.toString() + " - " + accuracy);
         }
     };
+    float[] accelerometerValues;
+    float[] magneticValues;
+    float[] rotationValues;
+    public void code() {
+//        Log.d("1122", "-----------------------radar");
+
+        float[] rotationMatrix = new float[9];
+        float[] orientationAngles = new float[3];
+        boolean success = SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerValues, magneticValues);
+        SensorManager.getOrientation(rotationMatrix, orientationAngles);
+
+//        if (success) {
+//            Log.d("1122", "accel ");
+//            Log.d("1122", Arrays.toString(accelerometerValues));
+//            Log.d("1122", "magnet ");
+//            Log.d("1122", Arrays.toString(magneticValues));
+////        Log.d("1122", "rotation ");
+////        Log.d("1122", Arrays.toString(rotationMatrix));
+//            Log.d("1122", "orientation ");
+//            Log.d("1122", String.valueOf(orientationAngles));
+//        }
+
+// Calculate the bearing between your location and the target point
+        double lat1 = currentLocation.getLatitude();
+        double lon1 = currentLocation.getLongitude();
+        double lat2 = locationEntry.getLatitude();
+        double lon2 = locationEntry.getLongitude();
+        double dLon = Math.toRadians(lon2 - lon1);
+        double y = Math.sin(dLon) * Math.cos(Math.toRadians(lat2));
+        double x = Math.cos(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) -
+                Math.sin(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(dLon);
+        double bearing = Math.toDegrees(Math.atan2(y, x));
+
+        if (bearing < 0) {
+            bearing += 360;
+        }
+
+// Calculate the rotation angle for the compass needle or arrow
+        float phoneRotation = (float) Math.toDegrees(orientationAngles[0]);
+        float rotationAngle = (float) (bearing - phoneRotation);
+//        Log.d("1122", "haversine bearing " + bearing);
+//        Log.d("1122", "phonerotation " + phoneRotation);
+//        Log.d("1122", "final angle " + rotationAngle);
+        float shortestAngle = (float) ((((rotationAngle % 360) + 540) % 360) - 180);
+//        Log.d("1122", "short angle " + shortestAngle);
+
+// Create an ObjectAnimator to rotate the compass needle or arrow to the calculated angle
+        ObjectAnimator animator = ObjectAnimator.ofFloat(img, "rotation", img.getRotation(), rotationAngle);
+
+// Set the duration and interpolator of the animation
+        animator.setDuration(500);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        animator.start();
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (sens != null) {
-            mSensorManager.registerListener(mLightSensorListener, sens,
-                    SensorManager.SENSOR_DELAY_NORMAL);
-        }
+//        if (sens != null) {
+//            mSensorManager.registerListener(mLightSensorListener, sens,
+//                    SensorManager.SENSOR_DELAY_NORMAL);
+//        }
     }
 
     @Override
@@ -216,6 +335,7 @@ public class RadarFragment extends Fragment {
             mSensorManager.unregisterListener(mLightSensorListener);
         }
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

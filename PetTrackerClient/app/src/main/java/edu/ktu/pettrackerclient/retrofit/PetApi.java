@@ -16,7 +16,10 @@ public interface PetApi {
     @GET("/pets/all")
     Call<List<Pet>> getAllPetsForUser(@Header("Authorization") String token, @Query("user_id") Long user_id);
 
-    @GET("/pets/device")
+    @GET("/pets/all_nophoto")
+    Call<List<Pet>> getAllPetsForUserWithoutPhotos(@Header("Authorization") String token, @Query("user_id") Long user_id);
+
+    @GET("/pets/pet")
     Call<Pet> getPetById(@Header("Authorization") String token, @Query("pet_id") Long pet_id);
 
     @POST("/pets/create")

@@ -10,6 +10,7 @@ import com.pettracker.pettrackerserver.model.device.DeviceRepository;
 import com.pettracker.pettrackerserver.model.jwt.models.User;
 import com.pettracker.pettrackerserver.model.jwt.payload.response.MessageResponse;
 import com.pettracker.pettrackerserver.model.jwt.repository.UserRepository;
+import com.pettracker.pettrackerserver.model.location_entry.LocationEntryDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +33,18 @@ public class DeviceController {
 	private UserRepository userRepository;
 	@Autowired
 	private DeviceRepository deviceRepository;
-	
+
 	@GetMapping("all")
-	public List<Device> getAllDevices(@RequestParam Long user_id) {
+	public List<Device> getAllDevices(@RequestHeader("Authorization") String token, @RequestParam Long user_id) {
 		return devicedao.getAllDevicesForUser(user_id);
+	}
+	@GetMapping("available")
+	public List<Device> getAvailableDevices(@RequestHeader("Authorization") String token, @RequestParam Long user_id) {
+		return devicedao.getAvailableDevicesForUser(user_id);
 	}
 	
 	@GetMapping("device")
-	public Device getDeviceById(@RequestParam Long device_id) {
+	public Device getDeviceById(@RequestHeader("Authorization") String token, @RequestParam Long device_id) {
 		Optional<Device> result = devicedao.getDeviceById(device_id);
 		if(result.isPresent()) {
 			return result.get();

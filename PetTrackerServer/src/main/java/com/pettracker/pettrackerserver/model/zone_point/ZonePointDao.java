@@ -28,5 +28,8 @@ public class ZonePointDao {
 		System.out.println(resultPoints.get(resultPoints.size()-1));
 		return resultPoints;
 	}
+	public void deleteZonePoints(Long zone_id) {
+		repository.deleteByZone(zone_id);
+	}
 
 }

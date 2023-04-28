@@ -50,13 +50,13 @@ public class PetTrackerServerApplication {
         		    Notification.Builder builder = Notification.builder();
         		    Message message = Message.builder()
         		            .setNotification(builder.build())
-        		            .putData("title", "abc")
-        		            .putData("body", "abc")
+        		            .putData("example title", "abc")
+        		            .putData("example body", "abc")
         		            .setToken(registrationToken)
         		            .build();
         			String response = FirebaseMessaging.getInstance().send(message);
         			System.out.println("Successfully sent message: " + response);
-                    Thread.sleep(5000);
+                    Thread.sleep(60000);
         		} catch (FirebaseMessagingException e) {
         			System.out.println("issue");
         			e.printStackTrace();

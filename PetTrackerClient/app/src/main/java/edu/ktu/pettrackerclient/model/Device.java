@@ -8,7 +8,6 @@ public class Device  {
     private String name;
     private String password;
     private Long fk_user_id;
-    private Long fk_zone_id;
 
     public Device() {
 
@@ -46,14 +45,6 @@ public class Device  {
         this.fk_user_id = fk_user_id;
     }
 
-    public Long getFk_zone_id() {
-        return fk_zone_id;
-    }
-
-    public void setFk_zone_id(Long fk_zone_id) {
-        this.fk_zone_id = fk_zone_id;
-    }
-
     @Override
     public String toString() {
         return "Device{" +
@@ -61,7 +52,6 @@ public class Device  {
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", fk_user_id=" + fk_user_id +
-                ", fk_zone_id=" + fk_zone_id +
                 '}';
     }
 }

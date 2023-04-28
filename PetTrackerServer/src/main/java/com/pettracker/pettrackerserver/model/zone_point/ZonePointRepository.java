@@ -16,6 +16,6 @@ public interface ZonePointRepository extends CrudRepository<ZonePoint, Long> {
 	
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE FROM location_entry WHERE fk_zone_id = ?1", nativeQuery = true)
+	@Query(value = "DELETE FROM zone_point WHERE fk_zone_id = ?1", nativeQuery = true)
 	void deleteByZone(Long zone_id);
 }

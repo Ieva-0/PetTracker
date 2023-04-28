@@ -5,7 +5,7 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/drawerNav_account"
+            android:id="@+id/drawerNav_accountFragment"
             android:icon="@drawable/ic_menu_camera"
             android:title="Account" />
         <item
@@ -17,9 +17,18 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Pets" />
         <item
+            android:id="@+id/drawerNav_petGroupListFragment"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Pet groups" />
+
+        <item
             android:id="@+id/drawerNav_zoneList"
             android:icon="@drawable/ic_menu_camera"
             android:title="Zones" />
+        <item
+            android:id="@+id/drawerNav_eventList"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Event" />
 
 <!--        <item-->
 <!--            android:id="@+id/drawerNav_history"-->

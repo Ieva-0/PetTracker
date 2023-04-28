@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="keppel">#FF52AD9C</color>
+    <color name="cambridge_blue">#FF82BDB2</color>
+    <color name="dogwood_rose">#FFD90368</color>
+    <color name="eggshell">#FFF1E9DA</color>
+    <color name="champagne">#FFF7E7CE</color>
+    <color name="cal_poly_green">#FF2A4D14</color>
+    <color name="gold">#FFFFD400</color>
+    <color name="flax">#FFF5ED99</color>
+    <color name="rich_black">#FF011627</color>
 </resources>

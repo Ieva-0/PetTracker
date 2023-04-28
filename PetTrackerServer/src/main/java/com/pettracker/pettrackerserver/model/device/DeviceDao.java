@@ -33,6 +33,12 @@ public class DeviceDao {
 		return devices;
 	}
 	
+	public List<Device> getAvailableDevicesForUser(Long user_id) {
+		List<Device> devices = new ArrayList<>();
+		Streamable.of(repository.getAvailableDevicesForUser(user_id)).forEach(devices::add);
+		return devices;
+	}
+	
 	public Optional<Device> getDeviceById(Long device_id) {
 		return repository.findById(device_id);
 	}

@@ -57,24 +57,24 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceHolder> {
         String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
         Long user_id = pref.getLong("user_id", 0);
 
-        if(device.getFk_zone_id() != null) {
-            ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
-            zoneApi.getZoneById(token, device.getFk_zone_id())
-                    .enqueue(new Callback<Zone>() {
-                        @Override
-                        public void onResponse(Call<Zone> call, Response<Zone> response) {
-                            Zone zone = response.body();
-                            if(zone != null && zone.getName() != null) {
-                                holder.zones.setText("Applied zone: " + zone.getName());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Zone> call, Throwable t) {
-
-                        }
-                    });
-        }
+//        if(device.getFk_zone_id() != null) {
+//            ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
+//            zoneApi.getZoneById(token, device.getFk_zone_id())
+//                    .enqueue(new Callback<Zone>() {
+//                        @Override
+//                        public void onResponse(Call<Zone> call, Response<Zone> response) {
+//                            Zone zone = response.body();
+//                            if(zone != null && zone.getName() != null) {
+//                                holder.zones.setText("Applied zone: " + zone.getName());
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<Zone> call, Throwable t) {
+//
+//                        }
+//                    });
+//        }
 
         holder.name.setText(device.getName());
 

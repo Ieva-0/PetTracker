@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,14 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import edu.ktu.pettrackerclient.adapter.DeviceAdapter;
 import edu.ktu.pettrackerclient.adapter.ZonePointAdapter;
-import edu.ktu.pettrackerclient.model.Device;
 import edu.ktu.pettrackerclient.model.ZonePoint;
-import edu.ktu.pettrackerclient.retrofit.MyMethod;
+import edu.ktu.pettrackerclient.retrofit.ZonePointDelegation;
 
 public class BottomSheet extends BottomSheetDialogFragment {
 
@@ -68,15 +64,15 @@ public class BottomSheet extends BottomSheetDialogFragment {
         recyclerView.setAdapter(adapter);
 
     }
-    private MyMethod remove;
-    private MyMethod update;
-    public void setRemove(MyMethod mth) {
+    private ZonePointDelegation remove;
+    private ZonePointDelegation update;
+    public void setRemove(ZonePointDelegation mth) {
         this.remove = mth;
     }
     public void executeRemove(int index) {
         remove.myMethod(index);
     }
-    public void setUpdate(MyMethod mth) {
+    public void setUpdate(ZonePointDelegation mth) {
         this.update = mth;
     }
     public void executeUpdate(int index) {

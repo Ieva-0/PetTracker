@@ -33,7 +33,7 @@ public class ZoneDao {
 	}
 
 	public void deleteZone(Long zone_id) {
-		repository.deleteById(zone_id);
 		zonePointRepository.deleteByZone(zone_id);
+		repository.deleteById(zone_id);
 	}
 }

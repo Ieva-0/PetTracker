@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -42,6 +44,7 @@ import edu.ktu.pettrackerclient.model.ZonePoint;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    ActionBar bar;
     private ActivityMainBinding binding;
     ImageButton logout;
 
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("1122", "not granted");
                 }
             });
+
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
+        bar = getSupportActionBar();
+
 //        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -122,10 +128,12 @@ public class MainActivity extends AppCompatActivity {
 //        });
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
+        //
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.drawerNav_deviceList, R.id.drawerNav_zoneList, R.id.drawerNav_petList)
+                R.id.drawerNav_deviceList, R.id.drawerNav_zoneList, R.id.drawerNav_petList,
+                R.id.drawerNav_accountFragment, R.id.drawerNav_petGroupListFragment, R.id.drawerNav_eventList)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.mainActivity_fragmentCont);
@@ -134,24 +142,24 @@ public class MainActivity extends AppCompatActivity {
 
         startService(new Intent(this, DeviceZoneService.class));
 
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("1122", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-//                        String msg = getString(Integer.parseInt("msg_token_fmt"), token);
-                        Log.d("1122", token);
-                        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
-                    }
-                });
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(new OnCompleteListener<String>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<String> task) {
+//                        if (!task.isSuccessful()) {
+//                            Log.w("1122", "Fetching FCM registration token failed", task.getException());
+//                            return;
+//                        }
+//
+//                        // Get new FCM registration token
+//                        String token = task.getResult();
+//
+//                        // Log and toast
+////                        String msg = getString(Integer.parseInt("msg_token_fmt"), token);
+//                        Log.d("1122", token);
+//                        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 
         logout = findViewById(R.id.logout_btn);
         logout.setOnClickListener(new View.OnClickListener() {

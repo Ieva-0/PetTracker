@@ -1,5 +1,5 @@
 package edu.ktu.pettrackerclient.retrofit;
 
-public interface MyMethod {
+public interface ZonePointDelegation {
     public void myMethod(int index);
 }

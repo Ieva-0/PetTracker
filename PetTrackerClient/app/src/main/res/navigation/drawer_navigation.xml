@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/drawerNav_deviceList"
         android:name="edu.ktu.pettrackerclient.DeviceListFragment"
-        android:label="@string/menu_devicelist"
+        android:label="Devices"
         tools:layout="@layout/fragment_device_list">
         <action
             android:id="@+id/action_drawerNav_deviceList_to_deviceCreateFragment"
@@ -21,11 +21,17 @@
         <action
             android:id="@+id/action_drawerNav_deviceList_to_drawerNav_petList"
             app:destination="@id/drawerNav_petList" />
+        <action
+            android:id="@+id/action_drawerNav_deviceList_to_drawerNav_accountFragment"
+            app:destination="@id/drawerNav_accountFragment" />
+        <action
+            android:id="@+id/action_drawerNav_deviceList_to_drawerNav_petGroupListFragment"
+            app:destination="@id/drawerNav_petGroupListFragment" />
     </fragment>
     <fragment
         android:id="@+id/drawerNav_createZone"
         android:name="edu.ktu.pettrackerclient.ZoneCreateFragment"
-        android:label="fragment_zone_create"
+        android:label="Add zone"
         tools:layout="@layout/fragment_zone_create" >
         <action
             android:id="@+id/action_drawerNav_createZone_to_drawerNav_zoneList"
@@ -34,7 +40,7 @@
     <fragment
         android:id="@+id/drawerNav_zoneList"
         android:name="edu.ktu.pettrackerclient.ZoneListFragment"
-        android:label="fragment_zone_list"
+        android:label="Zones"
         tools:layout="@layout/fragment_zone_list" >
         <action
             android:id="@+id/action_drawerNav_zoneList_to_drawerNav_deviceList"
@@ -45,11 +51,20 @@
         <action
             android:id="@+id/action_drawerNav_zoneList_to_petListFragment"
             app:destination="@id/drawerNav_petList" />
+        <action
+            android:id="@+id/action_drawerNav_zoneList_to_drawerNav_accountFragment"
+            app:destination="@id/drawerNav_accountFragment" />
+        <action
+            android:id="@+id/action_drawerNav_zoneList_to_drawerNav_petGroupListFragment"
+            app:destination="@id/drawerNav_petGroupListFragment" />
+        <action
+            android:id="@+id/action_drawerNav_zoneList_to_eventListFragment"
+            app:destination="@id/drawerNav_eventList" />
     </fragment>
     <fragment
         android:id="@+id/drawerNav_deviceCreate"
         android:name="edu.ktu.pettrackerclient.DeviceCreateFragment"
-        android:label="fragment_device_create"
+        android:label="Add device"
         tools:layout="@layout/fragment_device_create" >
         <action
             android:id="@+id/action_deviceCreateFragment_to_drawerNav_deviceList"
@@ -58,7 +73,7 @@
     <fragment
         android:id="@+id/drawerNav_deviceEdit"
         android:name="edu.ktu.pettrackerclient.DeviceEditFragment"
-        android:label="fragment_device_edit"
+        android:label="Edit device"
         tools:layout="@layout/fragment_device_edit" >
         <action
             android:id="@+id/action_deviceEditFragment_to_drawerNav_deviceList"
@@ -67,7 +82,7 @@
     <fragment
         android:id="@+id/drawerNav_petList"
         android:name="edu.ktu.pettrackerclient.PetListFragment"
-        android:label="fragment_pet_list"
+        android:label="Pets"
         tools:layout="@layout/fragment_pet_list" >
         <action
             android:id="@+id/action_petListFragment_to_drawerNav_deviceList"
@@ -78,31 +93,88 @@
         <action
             android:id="@+id/action_drawerNav_petList_to_petCreateFragment"
             app:destination="@id/drawerNav_petCreate" />
+        <action
+            android:id="@+id/action_drawerNav_petList_to_drawerNav_accountFragment"
+            app:destination="@id/drawerNav_accountFragment" />
+        <action
+            android:id="@+id/action_drawerNav_petList_to_drawerNav_petGroupListFragment"
+            app:destination="@id/drawerNav_petGroupListFragment" />
+        <action
+            android:id="@+id/action_drawerNav_petList_to_eventListFragment"
+            app:destination="@id/drawerNav_eventList" />
     </fragment>
     <fragment
         android:id="@+id/drawerNav_petCreate"
         android:name="edu.ktu.pettrackerclient.PetCreateFragment"
-        android:label="fragment_pet_create"
+        android:label="Add pet"
         tools:layout="@layout/fragment_pet_create" >
         <action
             android:id="@+id/action_petCreateFragment_to_drawerNav_petList"
             app:destination="@id/drawerNav_petList" />
     </fragment>
-    <!--    <fragment-->
-<!--        android:id="@+id/drawerNav_latest"-->
-<!--        android:name="edu.ktu.pettrackerclient.LastLocationFragment"-->
-<!--        android:label="@string/menu_latest"-->
-<!--        tools:layout="@layout/fragment_last_location" />-->
+    <fragment
+        android:id="@+id/drawerNav_accountFragment"
+        android:name="edu.ktu.pettrackerclient.AccountFragment"
+        android:label="Account"
 
-<!--    <fragment-->
-<!--        android:id="@+id/drawerNav_history"-->
-<!--        android:name="edu.ktu.pettrackerclient.HistoryFragment"-->
-<!--        android:label="@string/menu_history"-->
-<!--        tools:layout="@layout/fragment_history" />-->
-
-<!--    <fragment-->
-<!--        android:id="@+id/drawerNav_radar"-->
-<!--        android:name="edu.ktu.pettrackerclient.RadarFragment"-->
-<!--        android:label="@string/menu_radar"-->
-<!--        tools:layout="@layout/fragment_radar" />-->
+        tools:layout="@layout/fragment_account" >
+        <action
+            android:id="@+id/action_drawerNav_accountFragment_to_drawerNav_zoneList"
+            app:destination="@id/drawerNav_zoneList" />
+        <action
+            android:id="@+id/action_drawerNav_accountFragment_to_drawerNav_deviceList"
+            app:destination="@id/drawerNav_deviceList" />
+        <action
+            android:id="@+id/action_drawerNav_accountFragment_to_drawerNav_petList"
+            app:destination="@id/drawerNav_petList" />
+        <action
+            android:id="@+id/action_drawerNav_accountFragment_to_drawerNav_petGroupListFragment"
+            app:destination="@id/drawerNav_petGroupListFragment" />
+        <action
+            android:id="@+id/action_drawerNav_accountFragment_to_eventListFragment"
+            app:destination="@id/drawerNav_eventList" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawerNav_petGroupListFragment"
+        android:name="edu.ktu.pettrackerclient.PetGroupListFragment"
+        android:label="PetGroupListFragment" >
+        <action
+            android:id="@+id/action_drawerNav_petGroupListFragment_to_drawerNav_zoneList"
+            app:destination="@id/drawerNav_zoneList" />
+        <action
+            android:id="@+id/action_drawerNav_petGroupListFragment_to_drawerNav_deviceList"
+            app:destination="@id/drawerNav_deviceList" />
+        <action
+            android:id="@+id/action_drawerNav_petGroupListFragment_to_drawerNav_petList"
+            app:destination="@id/drawerNav_petList" />
+        <action
+            android:id="@+id/action_drawerNav_petGroupListFragment_to_drawerNav_accountFragment"
+            app:destination="@id/drawerNav_accountFragment" />
+        <action
+            android:id="@+id/action_drawerNav_petGroupListFragment_to_petGroupCreateFragment"
+            app:destination="@id/drawerNav_petGroupCreateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawerNav_petGroupCreateFragment"
+        android:name="edu.ktu.pettrackerclient.PetGroupCreateFragment"
+        android:label="fragment_pet_group_create"
+        tools:layout="@layout/fragment_pet_group_create" >
+        <action
+            android:id="@+id/action_petGroupCreateFragment_to_drawerNav_petGroupListFragment"
+            app:destination="@id/drawerNav_petGroupListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawerNav_eventList"
+        android:name="edu.ktu.pettrackerclient.EventListFragment"
+        android:label="EventListFragment" >
+        <action
+            android:id="@+id/action_eventListFragment_to_drawerNav_zoneList"
+            app:destination="@id/drawerNav_zoneList" />
+        <action
+            android:id="@+id/action_eventListFragment_to_drawerNav_accountFragment"
+            app:destination="@id/drawerNav_accountFragment" />
+        <action
+            android:id="@+id/action_eventListFragment_to_drawerNav_petList"
+            app:destination="@id/drawerNav_petList" />
+    </fragment>
 </navigation>

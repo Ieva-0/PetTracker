@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -34,7 +36,6 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
         this.zoneList = zoneList;
         this.ctx = ctx;
     }
-
     @NonNull
     @Override
     public ZoneHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,29 +44,12 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
 
         return new ZoneHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull ZoneHolder holder, int position) {
         Zone zone = zoneList.get(position);
         holder.name.setText(zone.getName());
         holder.devices.setText(String.valueOf(zone.getId()));
 
-        holder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Bundle bundle = new Bundle();
-//                bundle.putString("device_id", device.getId());
-//                Navigation.findNavController(view).navigate(R.id.list_to_gps, bundle);
-//                SharedPreferences pref = ctx.getSharedPreferences("MyPref", 0); // 0 - for private mode
-//                SharedPreferences.Editor editor = pref.edit();
-//                editor.putLong("zone_id", zone.getId()); // Storing string
-//                editor.commit(); // commit changes
-//                Intent intent = new Intent(ctx, GpsActivity.class);
-//                intent.putExtra("device_id", device.getId());
-//                ctx.startActivity(intent);
-                Toast.makeText(ctx, "clicked zone" + zone.getName(), Toast.LENGTH_SHORT).show();
-            }
-        });
         RetrofitService retrofitService = new RetrofitService();
         ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
         SharedPreferences pref = ctx.getSharedPreferences("MyPref", 0); // 0 - for private mode
@@ -87,7 +71,6 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
                                         zoneList.remove(holder.getAdapterPosition());
                                         notifyItemRangeChanged(holder.getAdapterPosition(), zoneList.size());
                                     }
-
                                     @Override
                                     public void onFailure(Call<Void> call, Throwable t) {
                                         Toast.makeText(view.getContext(), "failed", Toast.LENGTH_SHORT).show();
@@ -110,7 +93,9 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Bundle bundle = new Bundle();
+                bundle.putLong("zone_id", zone.getId());
+                Navigation.findNavController(view).navigate(R.id.action_drawerNav_zoneList_to_drawerNav_createZone, bundle);
             }
         });
     }
@@ -119,10 +104,7 @@ public class ZoneAdapter extends RecyclerView.Adapter<ZoneHolder> {
     public int getItemCount() {
         return zoneList.size();
     }
-
     public void setItems(List<Zone> items) {
         zoneList = items;
     }
-
-
 }

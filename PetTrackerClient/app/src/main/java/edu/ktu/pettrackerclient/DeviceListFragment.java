@@ -86,6 +86,7 @@ public class DeviceListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_device_list, container, false);
+
         recyclerView = v.findViewById(R.id.device_list);
 
         manager = new LinearLayoutManager(v.getContext());

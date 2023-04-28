@@ -16,6 +16,9 @@ public interface DeviceRepository extends CrudRepository<Device, Long>, JpaRepos
 	@Query(value = "SELECT * FROM device WHERE fk_user_id=?1", nativeQuery = true)
 	Collection<Device> getAllDevicesForUser(Long user_id);
 	
+	@Query(value = "SELECT device.* FROM device LEFT JOIN pet ON pet.fk_device_id=device.id WHERE pet.name is null AND device.fk_user_id=1;", nativeQuery = true)
+	Collection<Device> getAvailableDevicesForUser(Long user_id);
+	
 	void deleteById(Long device_id);
 
 	Optional<Device> findByName(String name);

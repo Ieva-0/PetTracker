@@ -32,51 +32,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DeviceEditFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class DeviceEditFragment extends Fragment implements AdapterView.OnItemSelectedListener {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public DeviceEditFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DeviceEditFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DeviceEditFragment newInstance(String param1, String param2) {
-        DeviceEditFragment fragment = new DeviceEditFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
     Spinner zone_select;
     Button save_device;
@@ -107,8 +70,6 @@ public class DeviceEditFragment extends Fragment implements AdapterView.OnItemSe
         Long user_id = pref.getLong("user_id", 0);
 
         RetrofitService retrofitService = new RetrofitService();
-
-
         DeviceApi deviceApi = retrofitService.getRetrofit().create(DeviceApi.class);
 
         deviceApi.getDeviceById(token, device_id)
@@ -123,40 +84,40 @@ public class DeviceEditFragment extends Fragment implements AdapterView.OnItemSe
                             Navigation.findNavController(v).navigate(R.id.action_deviceCreateFragment_to_drawerNav_deviceList);
                         }
                         device_name.setText(device_edit.getName());
-                        ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
-                        zoneApi.getAll(token, user_id)
-                                .enqueue(new Callback<List<Zone>>() {
-                                    @Override
-                                    public void onResponse(Call<List<Zone>> call, Response<List<Zone>> response) {
-                                        List<String> zone_names = new ArrayList<>();
-                                        zones = new ArrayList<>();
-                                        zone_names.add("");
-                                        Log.d("1122", "fk zone" + String.valueOf(device_edit.getFk_zone_id()));
-                                        Log.d("1122", "fk zone" + response.body());
-
-                                        int position = -1;
-                                        for (Zone o : response.body()) {
-                                            zone_names.add(o.getName());
-                                            zones.add(o);
-                                            if (device_edit.getFk_zone_id() != null) {
-                                                if (o.getId().equals(device_edit.getFk_zone_id())) {
-                                                    position = zones.indexOf(o);
-                                                }
-                                            }
-                                        }
-                                        Log.d("1122", "position" + String.valueOf(position));
-                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, zone_names);
-                                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                        zone_select.setAdapter(adapter);
-                                        if(position >= 0)
-                                            zone_select.setSelection(position+1);
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<List<Zone>> call, Throwable t) {
-
-                                    }
-                                });
+//                        ZoneApi zoneApi = retrofitService.getRetrofit().create(ZoneApi.class);
+//                        zoneApi.getAll(token, user_id)
+//                                .enqueue(new Callback<List<Zone>>() {
+//                                    @Override
+//                                    public void onResponse(Call<List<Zone>> call, Response<List<Zone>> response) {
+//                                        List<String> zone_names = new ArrayList<>();
+//                                        zones = new ArrayList<>();
+//                                        zone_names.add("");
+//                                        Log.d("1122", "fk zone" + String.valueOf(device_edit.getFk_zone_id()));
+//                                        Log.d("1122", "fk zone" + response.body());
+//
+//                                        int position = -1;
+//                                        for (Zone o : response.body()) {
+//                                            zone_names.add(o.getName());
+//                                            zones.add(o);
+//                                            if (device_edit.getFk_zone_id() != null) {
+//                                                if (o.getId().equals(device_edit.getFk_zone_id())) {
+//                                                    position = zones.indexOf(o);
+//                                                }
+//                                            }
+//                                        }
+//                                        Log.d("1122", "position" + String.valueOf(position));
+//                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, zone_names);
+//                                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                                        zone_select.setAdapter(adapter);
+//                                        if(position >= 0)
+//                                            zone_select.setSelection(position+1);
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(Call<List<Zone>> call, Throwable t) {
+//
+//                                    }
+//                                });
 
                     }
 
@@ -179,8 +140,8 @@ public class DeviceEditFragment extends Fragment implements AdapterView.OnItemSe
                 device.setName(device_name.getText().toString());
                 device.setPassword(bin2hex(getHash(device_newpassword.getText().toString())));
                 device.setFk_user_id(user_id);
-                if(selectedZone != null)
-                    device.setFk_zone_id(selectedZone.getId());
+//                if(selectedZone != null)
+//                    device.setFk_zone_id(selectedZone.getId());
                 DeviceApi deviceApi = retrofitService.getRetrofit().create(DeviceApi.class);
                 deviceApi.addDevice(token, device)
                         .enqueue(new Callback<Device>() {

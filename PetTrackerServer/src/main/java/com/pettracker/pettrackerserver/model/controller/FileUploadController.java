@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,26 +24,10 @@ public class FileUploadController {
     this.fileStorageService = fileStorageService;
   }
 
-  @PostMapping("/upload")
-  public ResponseEntity<UploadResponse> uploadFile(
-      @RequestParam("file") MultipartFile file
-//      @RequestParam("fullName") String fullName
-  ) {
-      System.out.println("inside request");
 
-      String fileName = fileStorageService.storeFile(file);
-      System.out.println("filename controller " + fileName);
-
-      UploadResponse uploadResponse = new UploadResponse(fileName, "name");
-      System.out.println("upload resp " + uploadResponse);
-
-      return ResponseEntity.ok().body(uploadResponse);
-  }
   
   @PostMapping("/array")
-  public ResponseEntity<UploadResponse> uploadArray(
-	      @RequestBody byte[] file
-	  ) {
+  public ResponseEntity<UploadResponse> uploadArray(@RequestHeader("Authorization") String token, @RequestBody byte[] file) {
 	      System.out.println("inside request");
 	      String fileName = fileStorageService.storeFile(file);
 	      System.out.println("filename controller " + fileName);
@@ -59,19 +44,5 @@ public class FileUploadController {
 	      byte[] photo = fileStorageService.getFile(filename);
 	      return ResponseEntity.ok().body(photo);
 	  }
-  @PostMapping("/stream")
-  public ResponseEntity<UploadResponse> uploadStream(
-	      @RequestBody InputStream file
-//	      @RequestParam("fullName") String fullName
-	  ) {
-	      System.out.println("inside request");
 
-	      String fileName = fileStorageService.storeFile(file);
-	      System.out.println("filename controller " + fileName);
-
-	      UploadResponse uploadResponse = new UploadResponse(fileName, "name");
-	      System.out.println("upload resp " + uploadResponse);
-
-	      return ResponseEntity.ok().body(uploadResponse);
-	  }
 }

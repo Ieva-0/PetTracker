@@ -16,6 +16,9 @@ public interface DeviceApi {
     @GET("/devices/all")
     Call<List<Device>> getAllDevicesForUser(@Header("Authorization") String token, @Query("user_id") Long user_id);
 
+    @GET("/devices/available")
+    Call<List<Device>> getAvailableDevicesForUser(@Header("Authorization") String token, @Query("user_id") Long user_id);
+
     @GET("/devices/device")
     Call<Device> getDeviceById(@Header("Authorization") String token, @Query("device_id") Long device_id);
 

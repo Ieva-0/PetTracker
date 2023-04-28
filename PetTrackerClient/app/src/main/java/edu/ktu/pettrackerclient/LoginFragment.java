@@ -108,24 +108,28 @@ public class LoginFragment extends Fragment {
 //                req.setUsername(String.valueOf(username.getText()));
 //                String pw = bin2hex(getHash(String.valueOf(password.getText())));
                 req.setUsername("reg");
-                String pw = bin2hex(getHash("123"));
+                String pw = bin2hex(getHash("aa"));
                 req.setPassword(pw);
                 Log.d("1122", "password " +pw);
                 auth_api.login(req)
                         .enqueue(new Callback<JwtResponse>() {
                             @Override
                             public void onResponse(Call<JwtResponse> call, Response<JwtResponse> response) {
-                                Log.d("1122", response.body().toString());
-                                editor.putString("tokenType", response.body().getTokenType());
-                                editor.putString("accessToken", response.body().getAccessToken()); // Storing string
-                                editor.putString("refreshToken", response.body().getRefreshToken()); // Storing string
-                                editor.putLong("user_id", response.body().getId());
-                                editor.putString("username", response.body().getUsername());
-                                editor.putString("email", response.body().getEmail());
+                                if(response.isSuccessful()) {
+                                    Log.d("1122", response.body().toString());
+                                    editor.putString("tokenType", response.body().getTokenType());
+                                    editor.putString("accessToken", response.body().getAccessToken()); // Storing string
+                                    editor.putString("refreshToken", response.body().getRefreshToken()); // Storing string
+                                    editor.putLong("user_id", response.body().getId());
+                                    editor.putString("username", response.body().getUsername());
+                                    editor.putString("email", response.body().getEmail());
+                                    editor.putString("password", pw);
 //                                editor.putString("role", response.body().getRoles().toString());
-                                editor.commit(); // commit changes
-                                Intent i = new Intent(getActivity(), MainActivity.class);
-                                startActivity(i);
+                                    editor.commit(); // commit changes
+                                    Intent i = new Intent(getActivity(), MainActivity.class);
+                                    startActivity(i);
+                                }
+
                             }
 
                             @Override

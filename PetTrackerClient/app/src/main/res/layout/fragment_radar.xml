@@ -20,20 +20,4 @@
         app:srcCompat="@drawable/compass1" />
 
 
-    <TextView
-        android:id="@+id/thirdFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFEB3B"
-        android:text="Radar"
-        android:textColor="#43a047"
-        android:textSize="40sp"
-        android:textStyle="italic|bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.469" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

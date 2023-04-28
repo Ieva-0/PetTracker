@@ -19,6 +19,15 @@ public class Pet {
 	private Long fk_device_id;
 	private String photo;
 	private Long fk_user_id;
+	private Long fk_zone_id;
+	private boolean notifications;
+    public boolean isNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(boolean notifications) {
+        this.notifications = notifications;
+    }
 
 	public Pet() {
 		
@@ -63,6 +72,14 @@ public class Pet {
 	public void setFk_user_id(Long fk_user_id) {
 		this.fk_user_id = fk_user_id;
 	}
+
+	public Long getFk_zone_id() {
+		return fk_zone_id;
+	}
+
+	public void setFk_zone_id(Long fk_zone_id) {
+		this.fk_zone_id = fk_zone_id;
+	}
     @Override
     public String toString() {
         return "Pet{" +
@@ -70,6 +87,7 @@ public class Pet {
                 ", name='" + name + '\'' +
                 ", fk_device_id=" + fk_device_id +
                 ", fk_user_id=" + fk_user_id +
+                ", fk_zone_id=" + fk_zone_id +
                 ", photo=" + photo +
                 '}';
     }

@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 
+import com.pettracker.pettrackerserver.model.pet_group.PetToGroupRepository;
+import com.pettracker.pettrackerserver.model.zone_point.ZonePoint;
+
 
 @Service
 public class PetDao {
 	@Autowired
 	private PetRepository repository;
-		
+	@Autowired 
+	private PetToGroupRepository pettogrouprepo;
+	
 	public Pet save(Pet pet) {
 		return repository.save(pet);
 	}
@@ -35,8 +40,9 @@ public class PetDao {
 	}
 
 	public void deletePet(Long pet_id) {
+		pettogrouprepo.deletePetToGroupRelationshipsForPet(pet_id);
 		repository.deleteById(pet_id);
 		
 	}
-
+	
 }

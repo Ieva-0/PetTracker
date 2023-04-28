@@ -101,7 +101,7 @@ public class ZoneListFragment extends Fragment {
         String token =  pref.getString("tokenType", null) + " " + pref.getString("accessToken", null);
         Long user_id = pref.getLong("user_id", 0);
         Log.d("1122", token);
-        zoneApi.getAll(token, user_id)
+        zoneApi.getAllZonesForUser(token, user_id)
                 .enqueue(new Callback<List<Zone>>() {
                     @Override
                     public void onResponse(Call<List<Zone>> call, Response<List<Zone>> response) {
