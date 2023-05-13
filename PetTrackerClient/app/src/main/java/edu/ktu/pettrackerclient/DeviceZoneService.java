@@ -1,53 +1,19 @@
 package edu.ktu.pettrackerclient;
 
-import android.app.Application;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Process;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.ktu.pettrackerclient.model.Device;
-import edu.ktu.pettrackerclient.model.MyLine;
-import edu.ktu.pettrackerclient.model.MyPolygon;
-import edu.ktu.pettrackerclient.model.Zone;
-import edu.ktu.pettrackerclient.model.ZonePoint;
-import edu.ktu.pettrackerclient.retrofit.DeviceApi;
-import edu.ktu.pettrackerclient.retrofit.RetrofitService;
-import edu.ktu.pettrackerclient.retrofit.ZoneApi;
-import edu.ktu.pettrackerclient.retrofit.ZonePointApi;
-import kotlinx.coroutines.scheduling.CoroutineScheduler;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DeviceZoneService extends FirebaseMessagingService {
     public DeviceZoneService() {

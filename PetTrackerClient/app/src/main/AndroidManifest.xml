@@ -52,14 +52,13 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/title_activity_test"
             android:theme="@style/Theme.PetTrackerClient.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".GpsActivity"
+            android:name=".location_entries.GpsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity">
             <meta-data

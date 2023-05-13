@@ -6,23 +6,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
@@ -36,16 +30,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ktu.pettrackerclient.adapter.ZonePointAdapter;
-import edu.ktu.pettrackerclient.databinding.ActivityMainBinding;
-import edu.ktu.pettrackerclient.model.Zone;
-import edu.ktu.pettrackerclient.model.ZonePoint;
+//import edu.ktu.pettrackerclient.databinding.ActivityMainBinding;
+import edu.ktu.pettrackerclient.zones.zone_points.ZonePoint;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     ActionBar bar;
-    private ActivityMainBinding binding;
+//    private ActivityMainBinding binding;
     ImageButton logout;
 
     List<ZonePoint> zone_points;
@@ -110,56 +102,54 @@ public class MainActivity extends AppCompatActivity {
 //                        perm);
 //            }
 //        }
+        setContentView(R.layout.activity_main);
 
-//        Intent intent = new Intent(this, DeviceZoneService.class);
-//        startService(intent);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.appBarMain.toolbar);
+        //0----
+//        binding = ActivityMainBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
+        //----
+        setSupportActionBar(findViewById(R.id.toolbar));
         bar = getSupportActionBar();
 
-//        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        //
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        //-----
+//        DrawerLayout drawer = binding.drawerLayout;
+//        NavigationView navigationView = binding.navView;
+        //----
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.welcome_user_text);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.drawerNav_deviceList, R.id.drawerNav_zoneList, R.id.drawerNav_petList,
-                R.id.drawerNav_accountFragment, R.id.drawerNav_petGroupListFragment, R.id.drawerNav_eventList)
-                .setOpenableLayout(drawer)
-                .build();
+        SharedPreferences pref = this.getSharedPreferences("MyPref", 0); // 0 - for private mode
+        navUsername.setText("Hello, " + pref.getString("username", null) + "!");
+        Integer role = pref.getInt("role", 0);
+        Log.d("1122", "role " + role);
+        if(role.equals(1)) {
+            mAppBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.drawerNav_deviceList, R.id.drawerNav_zoneList, R.id.drawerNav_petList,
+                    R.id.drawerNav_accountFragment, R.id.drawerNav_petGroupListFragment, R.id.drawerNav_eventList,
+                    R.id.drawerNav_userList)
+                    .setOpenableLayout(drawer)
+                    .build();
+
+        } else {
+            mAppBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.drawerNav_deviceList, R.id.drawerNav_zoneList, R.id.drawerNav_petList,
+                    R.id.drawerNav_accountFragment, R.id.drawerNav_petGroupListFragment, R.id.drawerNav_eventList)
+                    .setOpenableLayout(drawer)
+                    .build();
+
+            navigationView.getMenu().getItem(6).setVisible(false);
+            //----
+//            binding.navView.getMenu().getItem(6).setVisible(false);
+        }
         NavController navController = Navigation.findNavController(this, R.id.mainActivity_fragmentCont);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-//        startService(new Intent(this, DeviceZoneService.class));
-
-//        FirebaseMessaging.getInstance().getToken()
-//                .addOnCompleteListener(new OnCompleteListener<String>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<String> task) {
-//                        if (!task.isSuccessful()) {
-//                            Log.w("1122", "Fetching FCM registration token failed", task.getException());
-//                            return;
-//                        }
-//
-//                        // Get new FCM registration token
-//                        String token = task.getResult();
-//
-//                        // Log and toast
-////                        String msg = getString(Integer.parseInt("msg_token_fmt"), token);
-//                        Log.d("1122", token);
-//                        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
+        startService(new Intent(this, DeviceZoneService.class));
 
         logout = findViewById(R.id.logout_btn);
         logout.setOnClickListener(new View.OnClickListener() {

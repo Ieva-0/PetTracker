@@ -5,80 +5,93 @@
     android:id="@+id/frameLayout7"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PetCreateFragment">
+    tools:context=".pets.PetCreateFragment">
 
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/petCreate_name"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
+        android:layout_margin="20dp"
         android:hint="Pet name"
-        android:inputType="textPersonName"
+        app:counterEnabled="true"
+        app:counterMaxLength="20"
+        app:helperText="@string/name_requirements"
+        app:hintTextColor="@color/dark_gold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.233"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.099" />
+        app:layout_constraintVertical_bias="0.019"
+        tools:layout_editor_absoluteX="20dp">
 
-    <Button
-        android:id="@+id/petCreate_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.811"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.954" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/petCreate_name_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            />
 
-    <Button
-        android:id="@+id/petCreate_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.273"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.954" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <Spinner
-        android:id="@+id/petCreate_devicePicker"
-        android:layout_width="290dp"
-        android:layout_height="49dp"
+    <ImageView
+        android:id="@+id/petCreate_image2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.388"
+        app:layout_constraintHorizontal_bias="0.06"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.642" />
+        app:layout_constraintTop_toBottomOf="@id/petCreate_name"
+        app:layout_constraintVertical_bias="0.057"
+        tools:src="@drawable/baseline_no_photography_24" />
 
     <Button
         android:id="@+id/petCreate_upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload picture"
+        android:text="Upload icon for pet"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.858"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.303" />
+        app:layout_constraintHorizontal_bias="0.429"
+        app:layout_constraintStart_toEndOf="@id/petCreate_image2"
+        app:layout_constraintTop_toBottomOf="@id/petCreate_name"
+        app:layout_constraintVertical_bias="0.095" />
 
-    <Spinner
-        android:id="@+id/petCreate_zonePicker"
-        android:layout_width="290dp"
-        android:layout_height="49dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.388"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/petCreate_pickZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:hintTextColor="@color/dark_gold"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        app:layout_constraintTop_toBottomOf="@id/petCreate_image2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.508" />
+        android:hint="Assigned zone">
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/pickZone_auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/petCreate_pickDevice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:hintTextColor="@color/dark_gold"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        app:layout_constraintTop_toBottomOf="@id/petCreate_pickZone"
+        app:layout_constraintStart_toStartOf="parent"
+        android:hint="Assigned device"
+        >
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/pickDevice_auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Switch
         android:id="@+id/petCreate_enableNotifications"
@@ -87,49 +100,34 @@
         android:text="Receive notifications?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.206"
+        app:layout_constraintHorizontal_bias="0.087"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.745" />
+        app:layout_constraintTop_toBottomOf="@id/petCreate_pickDevice"
+        app:layout_constraintVertical_bias="0.115" />
 
-    <ImageView
-        android:id="@+id/petCreate_image2"
-        android:layout_width="133dp"
-        android:layout_height="126dp"
+    <Button
+        android:id="@+id/petCreate_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.169"
+        app:layout_constraintHorizontal_bias="0.253"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.272"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toBottomOf="@id/petCreate_enableNotifications"
+        app:layout_constraintVertical_bias="0.654" />
 
-    <TextView
-        android:id="@+id/textView4"
+    <Button
+        android:id="@+id/petCreate_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Zone"
-        app:layout_constraintBottom_toTopOf="@+id/petCreate_zonePicker"
+        android:text="Cancel"
+        android:backgroundTint="@color/flax"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.133"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/petCreate_image2"
-        app:layout_constraintVertical_bias="0.648" />
-
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="301dp"
-        android:layout_marginBottom="11dp"
-        android:text="Device"
-        app:layout_constraintBottom_toTopOf="@+id/petCreate_devicePicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/petCreate_zonePicker"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintHorizontal_bias="0.331"
+        app:layout_constraintStart_toEndOf="@id/petCreate_btn"
+        app:layout_constraintTop_toBottomOf="@id/petCreate_enableNotifications"
+        app:layout_constraintVertical_bias="0.654" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

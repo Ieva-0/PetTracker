@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GpsActivity">
+    tools:context=".location_entries.GpsActivity">
 <!--    <include-->
 <!--        android:id="@+id/app_bar_gps"-->
 <!--        layout="@layout/app_bar_gps"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent" />-->
+
     <FrameLayout
         android:id="@+id/gpsActivity_fragcont"
         android:layout_width="match_parent"
@@ -18,8 +19,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
 
+
+    </FrameLayout>
+    <ImageButton
+        android:id="@+id/lastUpdatedBtn"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/circle_img_btn_emerald"
+        app:srcCompat="@drawable/baseline_info_24"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
@@ -28,6 +41,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_navigation"/>
+        app:menu="@menu/bottom_navigation"
+        app:itemTextColor="@drawable/drawer_item"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

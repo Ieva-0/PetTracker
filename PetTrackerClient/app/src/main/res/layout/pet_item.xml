@@ -6,14 +6,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/petItem_layout">
 
+    <ImageView
+        android:id="@+id/petItem_picture"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.022"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.006" />
+
     <TextView
         android:id="@+id/petItem_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Pet Name"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.272"
@@ -25,54 +38,36 @@
         android:id="@+id/petItem_detailsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
         android:text="Click for details"
         android:textSize="15sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.329"
+        app:layout_constraintHorizontal_bias="0.281"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/petItem_name"
         app:layout_constraintVertical_bias="0.0" />
 
-    <ImageButton
-        android:id="@+id/petItem_delete"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.712"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.029"
-        app:srcCompat="@drawable/ic_baseline_delete_24" />
 
     <ImageButton
-        android:id="@+id/petItem_edit"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:id="@+id/petItem_options"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_margin="25dp"
+        android:background="@drawable/circle_img_btn_emerald"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintHorizontal_bias="0.997"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.029"
-        app:srcCompat="@drawable/ic_baseline_edit_24" />
-
-    <ImageView
-        android:id="@+id/petItem_picture"
-        android:layout_width="86dp"
-        android:layout_height="83dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.022"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.006" />
-
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/baseline_more_vert_24" />
 
     <LinearLayout
+        android:id="@+id/petItem_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
@@ -80,7 +75,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/petItem_detailsText"
-        android:id="@+id/petItem_details"
         >
 
         <TextView
@@ -90,7 +84,7 @@
             android:layout_margin="5dp"
             android:text="No device assigned."
             android:textSize="16sp"
-            android:textStyle="bold" />
+           />
         <TextView
             android:id="@+id/petItem_details_zone"
             android:layout_width="wrap_content"
@@ -98,7 +92,7 @@
             android:layout_margin="5dp"
             android:text="No zone assigned."
             android:textSize="16sp"
-            android:textStyle="bold" />
+           />
         <TextView
             android:id="@+id/petItem_details_groups"
             android:layout_width="wrap_content"
@@ -106,7 +100,7 @@
             android:layout_margin="5dp"
             android:text="Not assigned to any groups."
             android:textSize="16sp"
-            android:textStyle="bold" />
+           />
         <TextView
             android:id="@+id/petItem_details_notifications"
             android:layout_width="wrap_content"
@@ -114,7 +108,16 @@
             android:layout_margin="5dp"
             android:text="Notifications disabled."
             android:textSize="16sp"
-            android:textStyle="bold" />
+            />
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider7"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,11 +10,31 @@
 
     <color name="keppel">#FF52AD9C</color>
     <color name="cambridge_blue">#FF82BDB2</color>
+
     <color name="dogwood_rose">#FFD90368</color>
+
     <color name="eggshell">#FFF1E9DA</color>
     <color name="champagne">#FFF7E7CE</color>
-    <color name="cal_poly_green">#FF2A4D14</color>
+
+
     <color name="gold">#FFFFD400</color>
+    <color name="dark_gold">#FFD8B400</color>
     <color name="flax">#FFF5ED99</color>
+
     <color name="rich_black">#FF011627</color>
+    <color name="seasalt">#FFF9F8F8</color>
+
+    <color name="beaver">#FFA18276</color>
+    <color name="cafe_noir">#FF513C2C</color>
+
+    <color name="mindaro">#FFFDFD96</color>
+    <color name="cream">#FFFEFFBE</color>
+
+    <color name="fern_green">#FF628B48</color>
+    <color name="sage">#FFB5C4A4</color>
+    <color name="emerald">#FF69B578</color>
+    <color name="emerald_disabled">#FFbae6c3</color>
+
+    <color name="error_red">#B00020</color>
+
 </resources>

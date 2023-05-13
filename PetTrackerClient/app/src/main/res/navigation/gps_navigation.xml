@@ -6,7 +6,7 @@
     app:startDestination="@id/lastLocationFragment">
     <fragment
         android:id="@+id/radarFragment"
-        android:name="edu.ktu.pettrackerclient.RadarFragment"
+        android:name="edu.ktu.pettrackerclient.location_entries.RadarFragment"
         android:label="RadarFragment" >
         <action
             android:id="@+id/action_radarFragment_to_lastLocationFragment"
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/historyFragment"
-        android:name="edu.ktu.pettrackerclient.HistoryFragment"
+        android:name="edu.ktu.pettrackerclient.location_entries.HistoryFragment"
         android:label="HistoryFragment" >
         <action
             android:id="@+id/action_historyFragment_to_radarFragment"
@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/lastLocationFragment"
-        android:name="edu.ktu.pettrackerclient.LastLocationFragment"
+        android:name="edu.ktu.pettrackerclient.location_entries.LastLocationFragment"
         android:label="LastLocationFragment" >
         <action
             android:id="@+id/action_lastLocationFragment_to_radarFragment"

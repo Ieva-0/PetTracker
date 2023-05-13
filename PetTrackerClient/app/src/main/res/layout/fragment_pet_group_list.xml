@@ -7,39 +7,62 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <TextView
-        android:id="@+id/petGroupSearch_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_margin="20dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:textSize="17dp"
-        android:text="Search for pets: "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/petGroupSearch_textfield"
-        android:layout_width="240dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:ems="10"
-        android:hint="Pet name"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/petGroupSearch_textView" />
-
-    <Button
-        android:id="@+id/petGroupSearch_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Search"
-        app:layout_constraintStart_toEndOf="@id/petGroupSearch_textfield"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="280dp"
-        tools:layout_editor_absoluteY="32dp" />
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/petGroupSearch_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search for pet groups"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp"
+            app:hintTextColor="@color/dark_gold">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/petGroupSearch_name_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/fab_addPetGroup"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_img_btn_gold"
+                app:tint="@color/rich_black"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_add_24" />
+            <TextView
+                android:id="@+id/addDeviceText"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Add a pet group"
+                android:gravity="center"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -55,18 +78,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.611" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_addPetGroup"
+        <TextView
+            android:id="@+id/petGroup_noResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="No pet groups found."
+            android:textSize="20sp"
+            android:layout_margin="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.923"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.944"
-            app:srcCompat="@drawable/ic_baseline_add_24" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
