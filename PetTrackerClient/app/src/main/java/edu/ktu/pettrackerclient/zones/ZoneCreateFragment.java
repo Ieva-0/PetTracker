@@ -42,8 +42,8 @@ import java.util.List;
 
 import edu.ktu.pettrackerclient.MessageResponse;
 import edu.ktu.pettrackerclient.R;
-import edu.ktu.pettrackerclient.location_entries.MyLine;
-import edu.ktu.pettrackerclient.location_entries.MyPolygon;
+import edu.ktu.pettrackerclient.zones.zone_points.MyLine;
+import edu.ktu.pettrackerclient.zones.zone_points.MyPolygon;
 import edu.ktu.pettrackerclient.zones.zone_points.BottomSheet;
 import edu.ktu.pettrackerclient.zones.zone_points.ZonePoint;
 import edu.ktu.pettrackerclient.RetrofitService;
@@ -350,17 +350,17 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
 
     public Bitmap icon(int index) {
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(50, 50, conf);
+        Bitmap bmp = Bitmap.createBitmap(64, 64, conf);
         Paint paintbg = new Paint();
-        paintbg.setColor(Color.BLUE);
+        paintbg.setColor(getResources().getColor(R.color.gold));
         paintbg.setStrokeWidth(50);
         Canvas canvas = new Canvas(bmp);
-        canvas.drawCircle(25, 25, 25, paintbg);
+        canvas.drawCircle(32, 32, 32, paintbg);
         Paint paintext = new Paint();
-        paintext.setColor(Color.GREEN);
-        paintext.setStrokeWidth(50);
+        paintext.setColor(getResources().getColor(R.color.rich_black));
+        paintext.setStrokeWidth(75);
         paintext.setTextSize(65);
-        canvas.drawText(String.valueOf(index), 0, 50, paintext); // paint defines the text color, stroke width, size
+        canvas.drawText(String.valueOf(index), 15, 55, paintext); // paint defines the text color, stroke width, size
         return bmp;
     }
 

@@ -4,6 +4,7 @@
     <string name="password_requirements">Between 8 and 20 characters\n</string>
     <string name="confirm_password_requirements">Between 8 and 20 characters\nMust match first password field</string>
     <string name="email_requirements">Between 8 and 30 characters\nMust contain @</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_instead"><u>Already have an account? Login here</u></string>
+    <string name="register_instead"><u>Don\'t have an account? Create an account here</u></string>
+
 </resources>

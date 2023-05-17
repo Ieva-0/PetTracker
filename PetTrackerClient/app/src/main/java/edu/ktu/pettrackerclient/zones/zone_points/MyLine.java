@@ -1,4 +1,4 @@
-package edu.ktu.pettrackerclient.location_entries;
+package edu.ktu.pettrackerclient.zones.zone_points;
 
 import com.google.android.gms.maps.model.LatLng;
 

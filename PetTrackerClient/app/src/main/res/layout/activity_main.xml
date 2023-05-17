@@ -24,7 +24,6 @@
         app:menu="@menu/activity_main_drawer"
         android:backgroundTint="@color/seasalt"
         app:itemTextColor="@drawable/drawer_item"
-
         >
 
         <LinearLayout
@@ -38,7 +37,12 @@
             android:id="@+id/logout_btn"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            app:srcCompat="@drawable/circle_img_btn_gold" />
+            android:background="@drawable/circle_img_btn_gold"
+            app:tint="@color/rich_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_logout_24"/>
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>

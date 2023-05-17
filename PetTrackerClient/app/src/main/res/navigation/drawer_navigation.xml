@@ -220,7 +220,7 @@
     <fragment
         android:id="@+id/changePasswordFragment"
         android:name="edu.ktu.pettrackerclient.users.ChangePasswordFragment"
-        android:label="fragment_change_password"
+        android:label="Change password"
         tools:layout="@layout/fragment_change_password" >
         <action
             android:id="@+id/action_changePasswordFragment_to_drawerNav_accountFragment"
@@ -229,7 +229,7 @@
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="edu.ktu.pettrackerclient.users.EditProfileFragment"
-        android:label="fragment_edit_profile"
+        android:label="Edit profile"
         tools:layout="@layout/fragment_edit_profile" >
         <action
             android:id="@+id/action_editProfileFragment_to_drawerNav_accountFragment"

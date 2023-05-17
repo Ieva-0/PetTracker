@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="edu.ktu.pettrackerclient.users.RegisterFragment"
-        android:label="fragment_register"
+        android:label="Register"
         tools:layout="@layout/fragment_register" >
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="edu.ktu.pettrackerclient.users.LoginFragment"
-        android:label="fragment_login"
+        android:label="Login"
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_welcomeFragment"
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/welcomeFragment"
         android:name="edu.ktu.pettrackerclient.WelcomeFragment"
-        android:label="fragment_welcome"
+        android:label="PetTracker"
         tools:layout="@layout/fragment_welcome" >
         <action
             android:id="@+id/action_welcomeFragment_to_loginFragment"

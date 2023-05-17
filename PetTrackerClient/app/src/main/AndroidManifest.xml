@@ -20,9 +20,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/circle_for_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/circle_for_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.PetTrackerClient"
         android:usesCleartextTraffic="true"
@@ -38,7 +38,9 @@
 
         <activity
             android:name=".StartActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.PetTrackerClient.NoActionBar">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

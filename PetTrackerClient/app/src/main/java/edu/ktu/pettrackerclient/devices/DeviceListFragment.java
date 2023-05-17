@@ -99,11 +99,14 @@ public class DeviceListFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 List<DeviceWithDetails> filtered = new ArrayList<>();
-                devices.forEach(val -> {
-                    if(val.getName().contains(searchTerm.getEditText().getText())) {
-                        filtered.add(val);
-                    }
-                });
+                if(devices != null) {
+                    devices.forEach(val -> {
+                        if(val.getName().contains(searchTerm.getEditText().getText())) {
+                            filtered.add(val);
+                        }
+                    });
+                }
+
                 adapter.setItems(filtered);
                 adapter.notifyDataSetChanged();
                 if(filtered.size() > 0) {
