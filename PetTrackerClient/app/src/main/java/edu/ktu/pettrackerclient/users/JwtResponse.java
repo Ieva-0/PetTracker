@@ -11,6 +11,7 @@ public class JwtResponse {
     private String email;
     private Integer role;
 
+    private String firebase_token;
     private boolean successful;
     private String message;
     public JwtResponse(String accessToken, String refreshToken, Long id, String username, String email, List<String> roles) {
@@ -84,5 +85,13 @@ public class JwtResponse {
     }
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getFirebase_token() {
+        return firebase_token;
+    }
+
+    public void setFirebase_token(String firebase_token) {
+        this.firebase_token = firebase_token;
     }
 }

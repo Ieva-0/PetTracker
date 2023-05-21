@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,8 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
 
     ImageButton lastUpdated;
 
+    TextView lastUpdatedText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +48,24 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
 
         lastUpdated = findViewById(R.id.lastUpdatedBtn);
         lastUpdated.bringToFront();
+        lastUpdatedText = findViewById(R.id.lastUpdatedText);
+        lastUpdatedText.bringToFront();
+        lastUpdatedText.setVisibility(View.GONE);
         lastUpdated.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Timestamp temp = new Timestamp(locationsList.get(0).getUsed_at());
-                Date date = temp;
-                Toast.makeText(getApplicationContext(), "Last location update received at " + date, Toast.LENGTH_LONG).show();
+
+//                Toast.makeText(getApplicationContext(), "Last location update received at " + date + ".  History available since " + hist + ".", Toast.LENGTH_LONG).show();
+                if(lastUpdatedText.getVisibility() == View.VISIBLE) {
+                    lastUpdatedText.setVisibility(View.GONE);
+                } else {
+                    Timestamp temp = new Timestamp(locationsList.get(0).getUsed_at());
+                    Date date = temp;
+                    Timestamp hist0 = new Timestamp(locationsList.get(locationsList.size()-1).getUsed_at());
+                    Date hist = hist0;
+                    lastUpdatedText.setText("Last location update received at " + date + ".  \nHistory available since " + hist + ".");
+                    lastUpdatedText.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -110,6 +125,20 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
                 return list;
             }
         });
+
+        radarFragment.setGetEntry(new LocationEntryDelegation() {
+            @Override
+            public List<LocationEntry> myMethod() {
+                List<LocationEntry> list = new ArrayList<>();
+                if(locationsList != null && locationsList.size() != 0)
+                {
+                    list.add(locationsList.get(0));
+                }
+                else Log.d("1122", "gps activity/radar my method - location list null or empty");
+                return list;
+            }
+        });
+
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.gpsActivity_fragcont, lastLocationFragment)
                 .add(R.id.gpsActivity_fragcont, historyFragment)

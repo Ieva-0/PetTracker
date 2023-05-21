@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.pettracker.pettrackerserver.devices.Device;
 import com.pettracker.pettrackerserver.devices.DeviceDao;
 import com.pettracker.pettrackerserver.events.Event;
@@ -140,7 +144,7 @@ public class LocationEntryController {
 										eventDao.newEvent(newE);
 										System.out.println("new event =  " + newE.toString());
 										if (!isPetInsideZone(zone, newEntry)) {
-											// new notif
+											sendNotification(user.getFirebase_token(), pet.getName() + " has left " + zone.getName() + "!",  "Pet " + pet.getName() + " has left zone " + zone.getName() + " (assigned to group " + group.getName() + ")!", user.getId());
 										}
 									}
 
@@ -176,7 +180,7 @@ public class LocationEntryController {
 								eventDao.newEvent(newE);
 								System.out.println("new event =  " + newE.toString());
 								if (!isPetInsideZone(zone, newEntry)) {
-									// new notif
+									sendNotification(user.getFirebase_token(), pet.getName() + " has left " + zone.getName() + "!", "Pet " + pet.getName() + " has left zone " + zone.getName() + "!", user.getId());
 								}
 							}
 
@@ -257,5 +261,30 @@ public class LocationEntryController {
 			return false;
 		}
 		return true;
+	}
+	
+	public void sendNotification(String registrationToken, String title, String body, Long user_id) {
+		System.out.println("title " + title);
+		System.out.println("body " + body);
+		System.out.println("user_id" + user_id.toString());
+		try {
+//			String registrationToken = "cnbYxhIdTYyCDL4bzuDQmV:APA91bEri00liWE__rKnAffnm8dHTut3kGFxQNjVjg4YS1gTNBXGGSPiPklpqvKl4A43e5yO-Kav8DL55PJ8sJKjx7LPbZCMAkbUnMquEeAL-agj685AtZaKns8OyZ00xl9mAtgxxuCi";
+		    Notification.Builder builder = Notification.builder();
+		    Message message = Message.builder()
+		            .setNotification(builder.build())
+		            .putData("title", title)
+		            .putData("body", body)
+		            .putData("user_id", user_id.toString())
+		            .setToken(registrationToken)
+		            .build();
+			String response = FirebaseMessaging.getInstance().send(message);
+			System.out.println("Successfully sent message: " + response);
+		} catch (FirebaseMessagingException e) {
+			System.out.println("issue with notification");
+			e.printStackTrace();
+		}catch (Exception e) {
+			System.out.println("issue with notification");
+			e.printStackTrace();
+		}
 	}
 }

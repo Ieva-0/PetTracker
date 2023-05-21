@@ -1,5 +1,6 @@
 package edu.ktu.pettrackerclient.users;
 
+import edu.ktu.pettrackerclient.MessageResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -13,5 +14,8 @@ public interface AuthenticationApi {
     Call<JwtResponse> register(@Body SignupRequest req);
     @POST("/api/auth/refreshtoken")
     Call<JwtResponse> refresh(@Body TokenRefreshRequest req);
+
+    @POST("/api/auth/firebase_token")
+    Call<MessageResponse> firebase_token(@Body User user);
 
 }

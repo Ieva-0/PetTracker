@@ -1,9 +1,17 @@
 package edu.ktu.pettrackerclient.location_entries;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -18,9 +26,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -108,6 +119,7 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
+        zoomed = false;
         assignedToGroups = new ArrayList<>();
 
         zones = executeGetZones();
@@ -155,8 +167,14 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
                     if (reference != null)
                         reference.remove();
                     LatLng temp = new LatLng(latest.getLatitude(), latest.getLongitude());
-                    reference = map.addMarker(new MarkerOptions().position(temp));
-//                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(temp, 15));
+                    reference = map.addMarker(new MarkerOptions()
+                            .position(temp)
+                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.icon2)));
+
+                    if(!zoomed) {
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(temp, 15));
+                        zoomed = true;
+                    }
 
                 } else {
                     noEntries.setVisibility(View.VISIBLE);
@@ -167,6 +185,16 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
         });
     }
 
+    private boolean zoomed;
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -203,5 +231,30 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
         }
         return "";
     }
-
+//    public Bitmap icon(int index) {
+//
+//
+////        Resources res = getResources();
+////        Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.baseline_pets_24);
+////        Canvas canvas = new Canvas(bitmap.copy(Bitmap.Config.ARGB_8888, true));
+////        Paint paintbg = new Paint();
+////        paintbg.setColor(getResources().getColor(R.color.gold));
+////        paintbg.setStrokeWidth(50);
+////        canvas.drawCircle(32, 32, 32, paintbg);
+//
+////        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+////        Bitmap bmp = Bitmap.createBitmap(64, 64, conf);
+////        Paint paintbg = new Paint();
+////        paintbg.setColor(getResources().getColor(R.color.gold));
+////        paintbg.setStrokeWidth(50);
+////        Canvas canvas = new Canvas(bmp);
+////        canvas.drawCircle(32, 32, 32, paintbg);
+////        Paint paintext = new Paint();
+////        paintext.setColor(getResources().getColor(R.color.rich_black));
+////        Resources res = getResources();
+////        Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.baseline_pets_24);
+////        canvas.drawBitmap(bitmap, 0, 0, paintext);
+////        canvas.drawText(String.valueOf(index), 15, 55, paintext); // paint defines the text color, stroke width, size
+//        return bmp;
+//    }
 }

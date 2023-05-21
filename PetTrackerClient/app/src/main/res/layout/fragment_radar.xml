@@ -19,5 +19,14 @@
         app:layout_constraintVertical_bias="0.324"
         app:srcCompat="@drawable/radar" />
 
-
+    <TextView
+        android:id="@+id/radar_noData"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:gravity="center"
+        android:text="No Location entries available. "
+        android:textSize="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,15 +1,22 @@
 package edu.ktu.pettrackerclient.zones;
 
+import static android.content.Context.LOCATION_SERVICE;
+
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -24,6 +31,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -34,6 +44,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -204,6 +215,8 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
                                     .enqueue(new Callback<MessageResponse>() {
                                         @Override
                                         public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
+                                            SharedPreferences.Editor editor = pref.edit();
+                                            editor.remove("zone_id");
                                             if (response.isSuccessful()) {
                                                 if(response.body().isSuccessful()) {
                                                     dialog.cancel();
@@ -261,7 +274,8 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
             Log.d("1122", "no zone id");
         }
 
-        if (zone_id != null) {
+        if (zone_id != null && zone_id != -1) {
+            Log.d("1122", "map ready " + zone_id.toString());
             ZoneApi zoneapi = retrofitService.getRetrofit().create(ZoneApi.class);
             zoneapi.getZoneWithPoints(token, zone_id).enqueue(new Callback<ZoneWithPoints>() {
                 @Override
@@ -278,6 +292,7 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
                                             .draggable(true)));
                             saved_points.add(p);
                         });
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(saved_points.get(0), 15));
                         Log.d("1122", String.valueOf(saved_points));
                         if (saved_points.size() >= 3) {
                             map_polygon = map.addPolygon(new PolygonOptions()
@@ -293,8 +308,29 @@ public class ZoneCreateFragment extends Fragment implements OnMapReadyCallback, 
 
                 }
             });
+        } else {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+            locationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
+
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+                        Log.d("1122", "current location : " + location);
+                        Log.d("1122", "current location : " + currentLocation);
+                    }
+                });
+            } else {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(54.903087, 23.958380), 15));
+
+            }
         }
     }
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationManager locationManager;
 
     List<LatLng> saved_points;
     MyPolygon current_polygon;

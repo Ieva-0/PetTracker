@@ -15,10 +15,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
@@ -33,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import edu.ktu.pettrackerclient.databinding.ActivityMainBinding;
+import edu.ktu.pettrackerclient.users.JwtResponse;
 import edu.ktu.pettrackerclient.zones.zone_points.ZonePoint;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,10 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     ActionBar bar;
-//    private ActivityMainBinding binding;
     ImageButton logout;
-
-    List<ZonePoint> zone_points;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!isGranted) {
@@ -64,69 +66,58 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         List<String> perms = new ArrayList<>();
-//        perms.add(Manifest.permission.ACCESS_NETWORK_STATE);
-//        perms.add(Manifest.permission.INTERNET);
-//        perms.add(Manifest.permission.FOREGROUND_SERVICE);
+        perms.add(Manifest.permission.ACCESS_NETWORK_STATE);
+        perms.add(Manifest.permission.INTERNET);
+        perms.add(Manifest.permission.FOREGROUND_SERVICE);
         perms.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
         perms.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         perms.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
-            if (!(ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED)) {
-                requestPermissionLauncher.launch(
-                        Manifest.permission.ACCESS_COARSE_LOCATION);
-            }
-            if (!(ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED)) {
-                requestPermissionLauncher.launch(
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-            }
-
-        } else {
-            // You can directly ask for the permission.
-            // The registered ActivityResultCallback gets the result of this request.
-            requestPermissionLauncher.launch(
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-        }
-//
-//        for (String perm : perms) {
-//            if (ContextCompat.checkSelfPermission(
-//                    this, perm) ==
-//                    PackageManager.PERMISSION_GRANTED) {
-//
-//            } else {
-//                // You can directly ask for the permission.
-//                // The registered ActivityResultCallback gets the result of this request.
+//        if (ContextCompat.checkSelfPermission(
+//                this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+//                PackageManager.PERMISSION_GRANTED) {
+//            if (!(ContextCompat.checkSelfPermission(
+//                    this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+//                    PackageManager.PERMISSION_GRANTED)) {
 //                requestPermissionLauncher.launch(
-//                        perm);
+//                        Manifest.permission.ACCESS_COARSE_LOCATION);
 //            }
+//            if (!(ContextCompat.checkSelfPermission(
+//                    this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+//                    PackageManager.PERMISSION_GRANTED)) {
+//                requestPermissionLauncher.launch(
+//                        Manifest.permission.ACCESS_FINE_LOCATION);
+//            }
+//
+//        } else {
+//            // You can directly ask for the permission.
+//            // The registered ActivityResultCallback gets the result of this request.
+//            requestPermissionLauncher.launch(
+//                    Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 //        }
-        setContentView(R.layout.activity_main);
 
-        //0----
-//        binding = ActivityMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-        //----
+        for (String perm : perms) {
+            if (ContextCompat.checkSelfPermission(
+                    this, perm) ==
+                    PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(
+                        perm);
+            }
+        }
+        setContentView(R.layout.activity_main);
         setSupportActionBar(findViewById(R.id.toolbar));
         bar = getSupportActionBar();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        //-----
-//        DrawerLayout drawer = binding.drawerLayout;
-//        NavigationView navigationView = binding.navView;
-        //----
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.welcome_user_text);
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        //-------- drawer menu
         SharedPreferences pref = this.getSharedPreferences("MyPref", 0); // 0 - for private mode
         navUsername.setText("Hello, " + pref.getString("username", null) + "!");
         Integer role = pref.getInt("role", 0);
@@ -147,15 +138,17 @@ public class MainActivity extends AppCompatActivity {
                     .build();
 
             navigationView.getMenu().getItem(6).setVisible(false);
-            //----
-//            binding.navView.getMenu().getItem(6).setVisible(false);
         }
         NavController navController = Navigation.findNavController(this, R.id.mainActivity_fragmentCont);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        //--------------
 
+        //-------pet notifications
         startService(new Intent(this, DeviceZoneService.class));
+        //--------------
 
+        //-----logout
         logout = findViewById(R.id.logout_btn);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

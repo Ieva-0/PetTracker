@@ -1,9 +1,14 @@
 package edu.ktu.pettrackerclient.location_entries;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,8 +24,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
@@ -129,7 +137,7 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.map = map;
-
+        zoomed = false;
         zones = executeGetZones();
         handler.post(runnable = new Runnable() {
             public void run() {
@@ -148,7 +156,13 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
                     line = googleMap.addPolyline(opts);
                     line.setTag("B");
                     stylePolyline(line);
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationHistory.get(0).getLatitude(), locationHistory.get(0).getLongitude()), 15));
+                    if(!zoomed) {
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationHistory.get(0).getLatitude(), locationHistory.get(0).getLongitude()), 15));
+                        zoomed = true;
+                    }
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(locationHistory.get(0).getLatitude(), locationHistory.get(0).getLongitude()))
+                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.icon2)));
 
                 } else {
                     noEntries.setVisibility(View.VISIBLE);
@@ -159,6 +173,16 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback, Goo
             }
         });
     }
+    private boolean zoomed;
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

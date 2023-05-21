@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.util.Log;
@@ -15,37 +16,42 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-public class DeviceZoneService extends FirebaseMessagingService {
+import java.util.Map;
+
+public class  DeviceZoneService extends FirebaseMessagingService {
     public DeviceZoneService() {
     }
     private static final String TAG = "1122";
-
-    // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        SharedPreferences pref = this.getSharedPreferences("MyPref", 0); // 0 - for private mode
+        Long user_id = pref.getLong("user_id", 0);
+        Map<String, String> messageData = remoteMessage.getData();
+        String message_user_id = messageData.get("user_id");
+        Log.d("1122", "user id from msg:"+ message_user_id);
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-            sendNotification("aaaaa");
-
+        if(user_id.toString().equals(message_user_id)) {
+            Log.d("1122", "got message for current user");
+            sendNotification(messageData.get("title"), messageData.get("body"));
+        } else {
+            Log.d("1122", "got message but for different user: " + message_user_id +", logged in: " + user_id);
         }
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            sendNotification("aaaaa");
-        }
+//        // Check if message contains a data payload.
+//        if (remoteMessage.getData().size() > 0) {
+//            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+//            sendNotification("aaaaa");
+//
+//        }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+//        // Check if message contains a notification payload.
+//        if (remoteMessage.getNotification() != null) {
+//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+//            sendNotification("aaaaa");
+//        }
+
     }
-    // [END receive_message]
 
-    // [START on_new_token]
     /**
      * There are two scenarios when onNewToken is called:
      * 1) When a new token is generated on initial app startup
@@ -76,7 +82,7 @@ public class DeviceZoneService extends FirebaseMessagingService {
         // TODO: Implement this method to send token to your app server.
     }
 
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String title, String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -86,8 +92,8 @@ public class DeviceZoneService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setContentTitle("FCM Message")
-                        .setSmallIcon(R.drawable.ic_baseline_timeline_24)
+                        .setContentTitle(title)
+                        .setSmallIcon(R.drawable.baseline_pets_24)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)

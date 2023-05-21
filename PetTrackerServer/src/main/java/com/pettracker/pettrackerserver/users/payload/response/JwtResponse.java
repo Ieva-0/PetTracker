@@ -8,17 +8,19 @@ public class JwtResponse {
 	private String username;
 	private String email;
 	private Integer role;
-
+	private String firebase_token;
+	
 	private boolean successful;
 	private String message;
 
-	public JwtResponse(String accessToken, String refreshToken, Long id, String username, String email, Integer role, boolean successful, String message) {
+	public JwtResponse(String accessToken, String refreshToken, Long id, String username, String email, Integer role, String firebase_token, boolean successful, String message) {
 		this.token = accessToken;
 		this.setRefreshToken(refreshToken);
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.role = role;
+		this.firebase_token = firebase_token;
 		this.successful = successful;
 		this.message = message;
 	}
@@ -99,4 +101,12 @@ public class JwtResponse {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+    public String getFirebase_token() {
+        return firebase_token;
+    }
+
+    public void setFirebase_token(String firebase_token) {
+        this.firebase_token = firebase_token;
+    }
 }

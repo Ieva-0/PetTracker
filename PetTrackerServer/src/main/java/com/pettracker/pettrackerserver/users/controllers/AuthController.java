@@ -89,7 +89,7 @@ public class AuthController {
 					RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
 					return new JwtResponse(jwt, refreshToken.getToken(), user.getId(),
-							user.getUsername(), user.getEmail(), user.getFk_role_id(), true, "Successfully logged in!");
+							user.getUsername(), user.getEmail(), user.getFk_role_id(), user.getFirebase_token(), true, "Successfully logged in!");
 				} else {
 					System.out.println(user.getPassword().toUpperCase());
 					System.out.println(loginRequest.getPassword());
@@ -136,7 +136,25 @@ public class AuthController {
 		RefreshToken refreshToken = refreshTokenService.createRefreshToken(u.getId());
 
 		return new JwtResponse(jwt, refreshToken.getToken(), u.getId(),
-				u.getUsername(), u.getEmail(), u.getFk_role_id(), true, "Successfully registered!");
+				u.getUsername(), u.getEmail(), u.getFk_role_id(), u.getFirebase_token(), true, "Successfully registered!");
 	} 
 
+	@PostMapping("/firebase_token")
+	public MessageResponse updateFirebaseToken(@Valid @RequestBody User user) {
+		if (!userRepository.existsById(user.getId())) {
+			return new MessageResponse(false, "User doesn't exist.");
+		}
+
+		Optional<User> userDetails = userRepository.findById(user.getId());
+		if (userDetails.isPresent()) {
+			User u = userDetails.get();
+			u.setFirebase_token(user.getFirebase_token());
+			userRepository.save(u);
+			return new MessageResponse(true, "Token updated for user.");
+		}
+		return new MessageResponse(false, "Something went wrong.");
+
+	} 
+
+	
 }

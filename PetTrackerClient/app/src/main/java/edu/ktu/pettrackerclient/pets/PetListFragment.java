@@ -95,19 +95,22 @@ public class PetListFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 List<PetWithDetails> filtered = new ArrayList<>();
-                pets.forEach(val -> {
-                    if(val.getName().contains(searchTerm.getEditText().getText())) {
-                        filtered.add(val);
-                    }
-                });
-                adapter.setItems(filtered);
-                adapter.notifyDataSetChanged();
-                if(filtered.size() > 0) {
-                    noResults.setVisibility(View.INVISIBLE);
+                if(pets != null && pets.size() > 0) {
+                    pets.forEach(val -> {
+                        if(val.getName().contains(searchTerm.getEditText().getText())) {
+                            filtered.add(val);
+                        }
+                    });
+                    adapter.setItems(filtered);
+                    adapter.notifyDataSetChanged();
+                    if(filtered.size() > 0) {
+                        noResults.setVisibility(View.INVISIBLE);
 
-                } else {
-                    noResults.setVisibility(View.VISIBLE);
+                    } else {
+                        noResults.setVisibility(View.VISIBLE);
+                    }
                 }
+
             }
             @Override
             public void afterTextChanged(Editable editable) { }

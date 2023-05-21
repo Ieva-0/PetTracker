@@ -24,17 +24,17 @@ public class PetTrackerServerApplication {
 
 	public static void main(String[] args) {
 //		SpringApplication.run(PetTrackerServerApplication.class, args);
-//		FirebaseOptions options;
-//		try {
-//			String value_name = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-//			System.out.println(value_name);
-//			options = FirebaseOptions.builder().setCredentials(GoogleCredentials.getApplicationDefault()).build();
-//			FirebaseApp.initializeApp(options);
-//		} catch(RuntimeException e) {
-//			e.printStackTrace();
-//		} catch(IOException e) {
-//			e.printStackTrace();
-//		}
+		FirebaseOptions options;
+		try {
+			String value_name = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+			System.out.println(value_name);
+			options = FirebaseOptions.builder().setCredentials(GoogleCredentials.getApplicationDefault()).build();
+			FirebaseApp.initializeApp(options);
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 		ConfigurableApplicationContext run = SpringApplication.run(PetTrackerServerApplication.class, args);
 		PetTrackerServerApplication app = run.getBean(PetTrackerServerApplication.class);
 //        app.run();
@@ -45,25 +45,7 @@ public class PetTrackerServerApplication {
         Runnable r1 = () -> {
             for(int i = 0; i < 30; ++i) {
                 System.out.println("task 1");
-                try {
-        			String registrationToken = "cnbYxhIdTYyCDL4bzuDQmV:APA91bEri00liWE__rKnAffnm8dHTut3kGFxQNjVjg4YS1gTNBXGGSPiPklpqvKl4A43e5yO-Kav8DL55PJ8sJKjx7LPbZCMAkbUnMquEeAL-agj685AtZaKns8OyZ00xl9mAtgxxuCi";
-        		    Notification.Builder builder = Notification.builder();
-        		    Message message = Message.builder()
-        		            .setNotification(builder.build())
-        		            .putData("example title", "abc")
-        		            .putData("example body", "abc")
-        		            .setToken(registrationToken)
-        		            .build();
-        			String response = FirebaseMessaging.getInstance().send(message);
-        			System.out.println("Successfully sent message: " + response);
-                    Thread.sleep(60000);
-        		} catch (FirebaseMessagingException e) {
-        			System.out.println("issue");
-        			e.printStackTrace();
-        		}catch (Exception e) {
-        			System.out.println("issue");
-        			e.printStackTrace();
-        		}
+                
             }
         };
 

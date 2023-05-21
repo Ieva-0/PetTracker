@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/drawerNav_createZone"
         android:name="edu.ktu.pettrackerclient.zones.ZoneCreateFragment"
-        android:label="Create a zone"
+        android:label="Zone points"
         tools:layout="@layout/fragment_zone_create" >
         <action
             android:id="@+id/action_drawerNav_createZone_to_drawerNav_zoneList"
@@ -115,7 +115,7 @@
     <fragment
         android:id="@+id/drawerNav_petCreate"
         android:name="edu.ktu.pettrackerclient.pets.PetCreateFragment"
-        android:label="Create a pet"
+        android:label="Pet information"
         tools:layout="@layout/fragment_pet_create" >
         <action
             android:id="@+id/action_petCreateFragment_to_drawerNav_petList"
@@ -174,7 +174,7 @@
     <fragment
         android:id="@+id/drawerNav_petGroupCreateFragment"
         android:name="edu.ktu.pettrackerclient.pet_groups.PetGroupCreateFragment"
-        android:label="Create a pet group"
+        android:label="Pet group information"
         tools:layout="@layout/fragment_pet_group_create" >
         <action
             android:id="@+id/action_petGroupCreateFragment_to_drawerNav_petGroupListFragment"

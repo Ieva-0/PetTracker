@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -18,13 +19,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import edu.ktu.pettrackerclient.MainActivity;
+import edu.ktu.pettrackerclient.MessageResponse;
 import edu.ktu.pettrackerclient.R;
 import edu.ktu.pettrackerclient.RetrofitService;
 import retrofit2.Call;
@@ -119,6 +124,7 @@ public class LoginFragment extends Fragment {
                 req.setUsername(String.valueOf(username.getEditText().getText()));
                 String pw = bin2hex(getHash(password.getEditText().getText().toString()));
                 req.setPassword(pw);
+
                 auth_api.login(req)
                         .enqueue(new Callback<JwtResponse>() {
                             @Override
@@ -126,6 +132,38 @@ public class LoginFragment extends Fragment {
                                 if (response.isSuccessful()) {
                                     JwtResponse result = response.body();
                                     if(result.isSuccessful()) {
+                                        if(result.getFirebase_token() != null) {
+                                            FirebaseMessaging.getInstance().getToken()
+                                                    .addOnCompleteListener(new OnCompleteListener<String>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<String> task) {
+                                                            if (!task.isSuccessful()) {
+                                                                Log.d("1122", "Fetching FCM registration token failed", task.getException());
+                                                                return;
+                                                            }
+                                                            // Get new FCM registration token
+                                                            String token = task.getResult();
+                                                            // Log and toast
+                                                            Log.d("1122", "got firebase token after login: " + token);
+                                                            if(!result.getFirebase_token().equals(token)) {
+                                                                User user = new User();
+                                                                user.setFirebase_token(token);
+                                                                user.setId(result.getId());
+                                                                auth_api.firebase_token(user).enqueue(new Callback<MessageResponse>() {
+                                                                    @Override
+                                                                    public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
+                                                                        Log.d("1122",response.body().getMessage());
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onFailure(Call<MessageResponse> call, Throwable t) {
+
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                        }
                                         editor.putString("tokenType", result.getTokenType());
                                         editor.putString("accessToken", result.getAccessToken()); // Storing string
                                         editor.putString("refreshToken", result.getRefreshToken()); // Storing string
