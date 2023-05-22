@@ -196,7 +196,7 @@ public class LocationEntryController {
 		return new MessageResponse(false, "Error: couldn't save entry.");
 
 	}
-
+	
 	public boolean isPetInsideZone(Zone z, LocationEntry e) {
 		LatLng newPoint = new LatLng(e.getLatitude(), e.getLongitude());
 		List<ZonePoint> points = zonePointDao.getAllZonePoints(z.getId());
@@ -205,9 +205,43 @@ public class LocationEntryController {
 			list.add(new LatLng(p.getLatitude(), p.getLongitude()));
 		}
 		MyPolygon shape = new MyPolygon(list);
-		return insidePolygon(newPoint, shape);
+//		return insidePolygon(newPoint, shape);
+		return pointInPolygon(newPoint, shape);
 	}
 
+	public boolean pointInPolygon(LatLng point, MyPolygon vs) {
+        double x = point.latitude, y = point.longitude;
+        int wn = 0;
+
+        for (int i = 0, j = vs.polygon_points.size() - 1; i < vs.polygon_points.size(); j = i++) {
+            double xi = vs.polygon_points.get(i).latitude, yi = vs.polygon_points.get(i).longitude;
+            double xj = vs.polygon_points.get(j).latitude, yj = vs.polygon_points.get(j).longitude;
+            double[] a = { xj, yj };
+            double[] b = { xi, yi };
+            double[] c = { x, y };
+            if (yj <= y) {
+                if (yi > y) {
+                    if (isLeft(a, b, c) > 0) {
+                        wn++;
+                    }
+                }
+            } else {
+                if (yi <= y) {
+                    if (isLeft(a, b, c) < 0) {
+                        wn--;
+                    }
+                }
+            }
+        }
+        return wn != 0;
+    }
+
+    public double isLeft(double[] P0, double[] P1, double[] P2) {
+        double res = ((P1[0] - P0[0]) * (P2[1] - P0[1])
+                - (P2[0] - P0[0]) * (P1[1] - P0[1]));
+        return res;
+    }
+	
 	public boolean insidePolygon(LatLng p, MyPolygon shape) {
 		MyLine ray = new MyLine(p, new LatLng(minlat(shape) - 1, minlon(shape) - 1));
 		int intersections = 0;
