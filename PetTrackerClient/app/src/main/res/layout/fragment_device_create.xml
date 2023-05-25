@@ -13,27 +13,24 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Device name"
-        app:helperText="@string/name_requirements"
         android:layout_margin="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.159"
-        tools:layout_editor_absoluteX="0dp"
+        android:hint="Device name"
         app:counterEnabled="true"
         app:counterMaxLength="20"
-        app:hintTextColor="@color/dark_gold">
+        app:helperText="@string/name_requirements"
+        app:hintTextColor="@color/dark_gold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.025"
+        tools:layout_editor_absoluteX="20dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/deviceCreate_name_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            />
+            android:inputType="textPersonName" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/deviceCreate_password"
@@ -72,9 +69,10 @@
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.375"
+        app:layout_constraintHorizontal_bias="0.447"
         app:layout_constraintStart_toEndOf="@+id/deviceCreate_cancel"
-        app:layout_constraintTop_toBottomOf="@+id/deviceCreate_password" />
+        app:layout_constraintTop_toBottomOf="@+id/deviceCreate_password"
+        app:layout_constraintVertical_bias="0.912" />
 
     <Button
         android:id="@+id/deviceCreate_cancel"
@@ -85,8 +83,19 @@
         android:text="Cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.298"
+        app:layout_constraintHorizontal_bias="0.21"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/deviceCreate_password"
-        app:layout_constraintVertical_bias="0.503" />
+        app:layout_constraintVertical_bias="0.917" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="332dp"
+        android:layout_height="280dp"
+        android:layout_margin="20dp"
+        android:text="To send location entries from your custom device, send a HTTP POST request to http://pettracker.url/locations/new with a request body that includes these properties:\n - 'username' with the value of your username;\n - 'device_name' with the value of the name you gave the device; \n - 'password' with the value of the password you created hashed with SHA256; \n - 'latitude' with your latitude coordinate; \n - 'longitude' with the value of your longitude coordinate. \n If you receive the response 'Entry saved', your request was successful, otherwise, please try again or contact support via pettrackerproject@gmail.com."
+        app:layout_constraintBottom_toTopOf="@+id/deviceCreate_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceCreate_password" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,13 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pettracker.pettrackerserver.events.EventDao;
-import com.pettracker.pettrackerserver.events.EventRepository;
 import com.pettracker.pettrackerserver.location_entries.LocationEntryDao;
 import com.pettracker.pettrackerserver.pets.Pet;
 import com.pettracker.pettrackerserver.pets.PetDao;
-import com.pettracker.pettrackerserver.pets.PetRepository;
 import com.pettracker.pettrackerserver.users.payload.response.MessageResponse;
-import com.pettracker.pettrackerserver.users.repository.UserRepository;
 import com.pettracker.pettrackerserver.users.controllers.UserDao;
 import com.pettracker.pettrackerserver.users.models.User;
 
