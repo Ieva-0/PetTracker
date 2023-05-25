@@ -21,8 +21,6 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        LinearProgressIndicator pb = findViewById(R.id.start_progressBar);
-        pb.setVisibility(View.GONE);
 
     }
 

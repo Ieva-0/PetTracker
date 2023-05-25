@@ -3,6 +3,7 @@ package edu.ktu.pettrackerclient.location_entries;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -63,7 +64,7 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
                     Date date = temp;
                     Timestamp hist0 = new Timestamp(locationsList.get(locationsList.size()-1).getUsed_at());
                     Date hist = hist0;
-                    lastUpdatedText.setText("Last location update received at " + date + ".  \nHistory available since " + hist + ".");
+                    lastUpdatedText.setText(Html.fromHtml("Last location update received at <b>" + date + "</b>.  \nHistory available since <b>" + hist + "</b>.", Html.FROM_HTML_MODE_LEGACY));
                     lastUpdatedText.setVisibility(View.VISIBLE);
                 }
             }

@@ -51,12 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!isGranted) {
-//                    SharedPreferences pref = MainActivity.this.getSharedPreferences("MyPref", 0); // 0 - for private mode
-//                    SharedPreferences.Editor editor = pref.edit();
-//                    editor.clear().commit();
-//                    Intent intent = new Intent(MainActivity.this, StartActivity.class);
-//                    startActivity(intent);
-//                    Toast.makeText(MainActivity.this, "Successfully logged out", Toast.LENGTH_SHORT).show();
+
                     Log.d("1122", "not granted");
                 }
             });
@@ -102,8 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     PackageManager.PERMISSION_GRANTED) {
 
             } else {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
+
                 requestPermissionLauncher.launch(
                         perm);
             }
