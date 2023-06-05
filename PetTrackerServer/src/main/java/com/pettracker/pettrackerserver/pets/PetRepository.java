@@ -30,7 +30,8 @@ public interface PetRepository extends CrudRepository<Pet, Long>, JpaRepository<
 	
 	void deleteById(Long pet_id);
 
-	Optional<Pet> findByName(String name);
+	@Query(value = "SELECT * FROM pet WHERE name=?1", nativeQuery = true)
+	Collection<Pet> findByName(String name);
 	
 	Optional<Pet> findById(Long id);
 }

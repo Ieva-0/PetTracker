@@ -93,7 +93,7 @@ public class DeviceEditFragment extends Fragment {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(device_newpassword.getEditText().getText().length() < 8 || device_newpassword.getEditText().getText().length() > 20)
+                if((device_newpassword.getEditText().getText().length() < 8 && device_newpassword.getEditText().getText().length() != 0) || device_newpassword.getEditText().getText().length() > 20)
                     device_newpassword.setError(getResources().getString(R.string.password_requirements));
                 else device_newpassword.setError(null);
             }
@@ -177,7 +177,7 @@ public class DeviceEditFragment extends Fragment {
             device_name.setError(getResources().getString(R.string.name_requirements));
             valid = false;
         }
-        if (device_newpassword.getError() != null || device_newpassword.getEditText().getText().toString().isEmpty()) {
+        if (device_newpassword.getError() != null) {
             device_newpassword.setError(getResources().getString(R.string.password_requirements));
             valid = false;
         }

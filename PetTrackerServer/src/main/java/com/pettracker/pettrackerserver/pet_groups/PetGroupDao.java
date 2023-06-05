@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 
+import com.pettracker.pettrackerserver.devices.Device;
+
 @Service
 public class PetGroupDao {
 	@Autowired
@@ -49,5 +51,10 @@ public class PetGroupDao {
 	
 	public void deletePetGroupsForUser(Long user_id) {
 		repository.deleteByUser(user_id);
+	}
+	public List<PetGroup> getGroupsByName(String name) {
+		List<PetGroup> g = new ArrayList<>();
+		Streamable.of(repository.findByNameAll(name)).forEach(g::add);
+		return g;
 	}
 }

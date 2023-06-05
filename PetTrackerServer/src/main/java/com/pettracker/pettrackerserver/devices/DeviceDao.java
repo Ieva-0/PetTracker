@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 
+import com.pettracker.pettrackerserver.pets.Pet;
+
 @Service
 public class DeviceDao {
 	@Autowired
@@ -41,6 +43,12 @@ public class DeviceDao {
 
 	public Optional<Device> getDeviceByName(String name) {
 		return repository.findByName(name);
+	}
+	
+	public List<Device> getDevicesByName(String name) {
+		List<Device> d = new ArrayList<>();
+		Streamable.of(repository.findByNameAll(name)).forEach(d::add);
+		return d;
 	}
 
 	public void deleteDevice(Long device_id) {

@@ -297,7 +297,7 @@ public class EventListFragment extends Fragment {
             if(picked_groups != null && picked_groups.size() != 0) {
                 boolean found = false;
                 for(PetGroup g : picked_groups) {
-                    if(e.getPet_group().getId() != null && g.getId().equals(e.getPet_group().getId())) {
+                    if(e.getPet_group() != null && e.getPet_group().getId() != null && g.getId().equals(e.getPet_group().getId())) {
                         found = true;
                     }
                 }

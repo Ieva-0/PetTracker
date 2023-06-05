@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pettracker.pettrackerserver.devices.Device;
 import com.pettracker.pettrackerserver.events.EventDao;
 import com.pettracker.pettrackerserver.pet_groups.pet_to_group.PetToGroup;
 import com.pettracker.pettrackerserver.pet_groups.pet_to_group.PetToGroupDao;
@@ -149,12 +150,14 @@ public class PetGroupController {
 	public MessageResponse addPetGroup(@RequestHeader("Authorization") String token,
 			@RequestBody PetGroupCreateRequest groupreq) {
 		User user = getUserByToken(token);
-		Optional<PetGroup> groupDetails = petGroupDao.getPetGroupByName(groupreq.getGroup_name());
-		if (groupDetails.isPresent()) {
-			PetGroup g = groupDetails.get();
-			if (g.getFk_user_id().equals(user.getId())) {
-				return new MessageResponse(false, "Pet group name is already used.");
+		List<PetGroup> groups = petGroupDao.getGroupsByName(groupreq.getGroup_name());
+		if (groups.size() > 0) {
+			for(PetGroup g : groups) {
+				if (g.getFk_user_id().equals(user.getId()) && (groupreq.getGroup_id() == null || !g.getId().equals(groupreq.getGroup_id()))) {
+					return new MessageResponse(false, "Pet group name is already used.");
+				}
 			}
+			
 		}
 		PetGroup group = new PetGroup();
 		if (groupreq.getGroup_id() != null) {
@@ -178,7 +181,7 @@ public class PetGroupController {
 			relationships.add(temp);
 		}
 		relationshipDao.saveAllPetToGroupRelationships(relationships);
-		return new MessageResponse(true, "Pet group successfully created!");
+		return new MessageResponse(true, "Pet group successfully saved!");
 	}
 
 	@DeleteMapping("delete")

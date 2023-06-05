@@ -33,8 +33,10 @@ public class PetDao {
 		return repository.findById(pet_id);
 	}
 	
-	public Optional<Pet> getPetByName(String name) {
-		return repository.findByName(name);
+	public List<Pet> getPetByName(String name) {
+		List<Pet> pets = new ArrayList<>();
+		Streamable.of(repository.findByName(name)).forEach(pets::add);
+		return pets;
 	}
 	
 	public Optional<Pet> getPetByDevice(Long device_id) {

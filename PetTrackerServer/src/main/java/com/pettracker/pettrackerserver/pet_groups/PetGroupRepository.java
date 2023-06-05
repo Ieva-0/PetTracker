@@ -10,6 +10,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pettracker.pettrackerserver.devices.Device;
+
 @Repository
 public interface PetGroupRepository extends CrudRepository<PetGroup, Long>, JpaRepository<PetGroup, Long> {
 	@Query(value = "SELECT * FROM pet_group WHERE fk_user_id=?1", nativeQuery = true)
@@ -28,4 +30,7 @@ public interface PetGroupRepository extends CrudRepository<PetGroup, Long>, JpaR
 	Optional<PetGroup> findByName(String name);
 
 	Optional<PetGroup> findById(Long id);
+	
+	@Query(value = "SELECT * FROM pet_group WHERE name=?1", nativeQuery = true)
+	Collection<PetGroup> findByNameAll(String name);
 }

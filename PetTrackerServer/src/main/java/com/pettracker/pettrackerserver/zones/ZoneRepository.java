@@ -9,6 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pettracker.pettrackerserver.pet_groups.PetGroup;
+
 @Repository
 public interface ZoneRepository extends CrudRepository<Zone, Long> {
 	@Query(value = "SELECT * FROM zone WHERE fk_user_id=?1", nativeQuery = true)
@@ -25,4 +27,6 @@ public interface ZoneRepository extends CrudRepository<Zone, Long> {
 
 	Optional<Zone> findByName(String name);
 	
+	@Query(value = "SELECT * FROM zone WHERE name=?1", nativeQuery = true)
+	Collection<Zone> findByNameAll(String name);
 }

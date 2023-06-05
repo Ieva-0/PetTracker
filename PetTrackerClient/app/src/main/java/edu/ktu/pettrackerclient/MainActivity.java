@@ -2,6 +2,7 @@ package edu.ktu.pettrackerclient;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -144,11 +145,12 @@ public class MainActivity extends AppCompatActivity {
 
         //-----logout
         logout = findViewById(R.id.logout_btn);
+        Context c = this;
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext(), R.style.AlertDialogTheme);
+                AlertDialog.Builder builder = new AlertDialog.Builder(c, R.style.AlertDialogTheme);
                 builder.setTitle("Are you sure you'd like to log out?");
                 builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override

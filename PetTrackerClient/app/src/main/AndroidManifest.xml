@@ -9,9 +9,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
-    <uses-feature android:name="android.hardware.sensor.magnetometer" android:required="true" />
-    <uses-feature android:name="android.hardware.sensor.magnetic_field" android:required="true" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.magnetometer" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.magnetic_field" android:required="false" />
 
     <application
         android:allowBackup="true"

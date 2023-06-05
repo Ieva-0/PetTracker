@@ -197,8 +197,6 @@ public class PetCreateFragment extends Fragment {
                         zone_names.add(o.getName());
                         zones.add(o);
                     }
-
-                    Log.d("1122", zone_names.toString());
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, zone_names);
                     pick_zone.setAdapter(adapter2);
                     if (oldZoneObj != null)

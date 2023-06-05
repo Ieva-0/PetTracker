@@ -120,38 +120,6 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
     public void onMapReady(GoogleMap map) {
         this.map = map;
         zoomed = false;
-        assignedToGroups = new ArrayList<>();
-
-        zones = executeGetZones();
-        Log.d("1122", "-------------");
-
-        if(zones.assignedToPet != null)
-        {
-            Log.d("1122", "assigned to pet");
-            Polygon temp = map.addPolygon(new PolygonOptions()
-                    .addAll(for_polygon(zones.assignedToPet.getPoints()))
-                    .strokeColor(pet_stroke_color)
-                    .fillColor(pet_fill_color)
-                    .clickable(true));
-            temp.setTag(labelForZone(zones.assignedToPet.getId()));
-            assignedToPet = temp;
-        }
-        Log.d("1122", zones.toString());
-        if(zones.assignedToGroups != null) {
-            for(ZoneWithPoints z : zones.assignedToGroups) {
-                if (zones.assignedToPet == null || !zones.assignedToPet.getId().equals(z.getId())) {
-                    Polygon temp = map.addPolygon(new PolygonOptions()
-                            .addAll(for_polygon(z.getPoints()))
-                            .strokeColor(group_stroke_color)
-                            .fillColor(group_fill_color)
-                            .clickable(true));
-                    Log.d("1122", labelForZone(z.getId()));
-                    temp.setTag(labelForZone(z.getId()));
-                    assignedToGroups.add(temp);
-                }
-
-            }
-        }
         map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(@NonNull Polygon polygon) {
@@ -180,11 +148,46 @@ public class LastLocationFragment extends Fragment implements OnMapReadyCallback
                     noEntries.setVisibility(View.VISIBLE);
                     Log.d("1122", "last location - location list null or empty");
                 }
+                if(zones == null) {
+                    zones();
+                }
                 handler.postDelayed(runnable, delay);
             }
         });
     }
 
+    public void zones() {
+        if(map == null)
+            return;
+        assignedToGroups = new ArrayList<>();
+        zones = executeGetZones();
+
+        if(zones != null && zones.assignedToPet != null)
+        {
+            Polygon temp = map.addPolygon(new PolygonOptions()
+                    .addAll(for_polygon(zones.assignedToPet.getPoints()))
+                    .strokeColor(pet_stroke_color)
+                    .fillColor(pet_fill_color)
+                    .clickable(true));
+            temp.setTag(labelForZone(zones.assignedToPet.getId()));
+            assignedToPet = temp;
+        }
+        if(zones != null && zones.assignedToGroups != null) {
+            for(ZoneWithPoints z : zones.assignedToGroups) {
+                if (zones.assignedToPet == null || !zones.assignedToPet.getId().equals(z.getId())) {
+                    Polygon temp = map.addPolygon(new PolygonOptions()
+                            .addAll(for_polygon(z.getPoints()))
+                            .strokeColor(group_stroke_color)
+                            .fillColor(group_fill_color)
+                            .clickable(true));
+                    Log.d("1122", labelForZone(z.getId()));
+                    temp.setTag(labelForZone(z.getId()));
+                    assignedToGroups.add(temp);
+                }
+
+            }
+        }
+    }
     private boolean zoomed;
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorResId) {

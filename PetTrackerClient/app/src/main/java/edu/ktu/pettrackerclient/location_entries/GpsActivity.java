@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import edu.ktu.pettrackerclient.R;
+import edu.ktu.pettrackerclient.zones.Zone;
 import edu.ktu.pettrackerclient.zones.ZonesForDeviceResponse;
 import edu.ktu.pettrackerclient.RetrofitService;
 import edu.ktu.pettrackerclient.zones.ZoneApi;
@@ -80,18 +81,7 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
             @Override
             public void onResponse(Call<ZonesForDeviceResponse> call, Response<ZonesForDeviceResponse> response) {
                 if(response.isSuccessful()) {
-                    lastLocationFragment.setGetZones(new ZonesListDelegation() {
-                        @Override
-                        public ZonesForDeviceResponse myMethod() {
-                            return response.body();
-                        }
-                    });
-                    historyFragment.setGetZones(new ZonesListDelegation() {
-                        @Override
-                        public ZonesForDeviceResponse myMethod() {
-                            return response.body();
-                        }
-                    });
+                    zoneList = response.body();
                 }
             }
 
@@ -101,6 +91,26 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
                 Log.d("1122", String.valueOf(t));
             }
         });
+        lastLocationFragment.setGetZones(new ZonesListDelegation() {
+            @Override
+            public ZonesForDeviceResponse myMethod() {
+                return zoneList;
+            }
+        });
+        historyFragment.setGetZones(new ZonesListDelegation() {
+            @Override
+            public ZonesForDeviceResponse myMethod() {
+//                ZonesForDeviceResponse resp = new ZonesForDeviceResponse();
+//                if(zoneList != null) {
+//                    return zoneList;
+//                } else {
+//                    return resp;
+//                }
+                return zoneList;
+
+            }
+        });
+
         lastLocationFragment.setGetEntry(new LocationEntryDelegation() {
             @Override
             public List<LocationEntry> myMethod() {
@@ -163,6 +173,8 @@ public class GpsActivity extends AppCompatActivity implements BottomNavigationVi
     Runnable runnable;
     int delay = 2000;
     List<LocationEntry> locationsList;
+
+    ZonesForDeviceResponse zoneList;
     @Override
     protected void onResume() {
 

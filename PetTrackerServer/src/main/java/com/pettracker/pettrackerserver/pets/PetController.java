@@ -202,12 +202,14 @@ public class PetController {
 	@PostMapping("save")
 	public MessageResponse savePet(@RequestHeader("Authorization") String token, @RequestBody PetWithPhoto petwithphoto) {
 		User user = getUserByToken(token);
-		Optional<Pet> petDetails = petDao.getPetByName(petwithphoto.getName());
-		if (petDetails.isPresent()) {
-			Pet p = petDetails.get();
-			if (p.getFk_user_id().equals(user.getId())) {
-				return new MessageResponse(false, "Pet name is already used.");
+		List<Pet> pets = petDao.getPetByName(petwithphoto.getName());
+		if (pets.size() > 0) {
+			for(Pet p : pets) {
+				if (p.getFk_user_id().equals(user.getId()) && (petwithphoto.getId() == null || !p.getId().equals(petwithphoto.getId()))) {
+					return new MessageResponse(false, "Pet name is already used.");
+				}
 			}
+			
 		}
 		
 		Pet pet = new Pet();
@@ -224,7 +226,7 @@ public class PetController {
 
 		}
 		petDao.save(pet);
-		return new MessageResponse(true, "Pet created successfully!");
+		return new MessageResponse(true, "Pet saved successfully!");
 	}
 
 	@DeleteMapping("delete")

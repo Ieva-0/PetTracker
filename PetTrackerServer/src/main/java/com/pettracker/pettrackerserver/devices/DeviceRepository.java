@@ -10,6 +10,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pettracker.pettrackerserver.pets.Pet;
+
 @Repository
 public interface DeviceRepository extends CrudRepository<Device, Long>, JpaRepository<Device, Long> {
 	@Query(value = "SELECT * FROM device WHERE fk_user_id=?1", nativeQuery = true)
@@ -28,4 +30,7 @@ public interface DeviceRepository extends CrudRepository<Device, Long>, JpaRepos
 	@Modifying
 	@Query(value = "DELETE FROM device WHERE fk_user_id = ?1", nativeQuery = true)
 	void deleteByUser(Long user_id);
+	
+	@Query(value = "SELECT * FROM device WHERE name=?1", nativeQuery = true)
+	Collection<Device> findByNameAll(String name);
 }

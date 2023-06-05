@@ -97,20 +97,35 @@ public class ZoneListFragment extends Fragment {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                List<ZoneWithDetails> filtered = new ArrayList<>();
-                zones.forEach(val -> {
-                    if(val.getName().contains(searchTerm.getEditText().getText())) {
-                        filtered.add(val);
+                if(!searchTerm.getEditText().getText().toString().isEmpty()) {
+                    List<ZoneWithDetails> filtered = new ArrayList<>();
+                    if(zones == null) {
+                        noResults.setVisibility(View.VISIBLE);
+                        return;
                     }
-                });
-                adapter.setItems(filtered);
-                adapter.notifyDataSetChanged();
-                if(filtered.size() > 0) {
-                    noResults.setVisibility(View.INVISIBLE);
+                    zones.forEach(val -> {
+                        if(val.getName().contains(searchTerm.getEditText().getText())) {
+                            filtered.add(val);
+                        }
+                    });
+                    adapter.setItems(filtered);
+                    adapter.notifyDataSetChanged();
+                    if(filtered.size() > 0) {
+                        noResults.setVisibility(View.INVISIBLE);
 
-                } else {
-                    noResults.setVisibility(View.VISIBLE);
+                    } else {
+                        noResults.setVisibility(View.VISIBLE);
+                    }
+                }  else {
+                    adapter.setItems(zones);
+                    if(!(zones == null) && zones.size() > 0) {
+                        noResults.setVisibility(View.INVISIBLE);
+
+                    } else {
+                        noResults.setVisibility(View.VISIBLE);
+                    }
                 }
+
             }
             @Override
             public void afterTextChanged(Editable editable) { }

@@ -93,7 +93,7 @@
         android:layout_width="332dp"
         android:layout_height="280dp"
         android:layout_margin="20dp"
-        android:text="To send location entries from your custom device, send a HTTP POST request to http://pettracker.url/locations/new with a request body that includes these properties:\n - 'username' with the value of your username;\n - 'device_name' with the value of the name you gave the device; \n - 'password' with the value of the password you created hashed with SHA256; \n - 'latitude' with your latitude coordinate; \n - 'longitude' with the value of your longitude coordinate. \n If you receive the response 'Entry saved', your request was successful, otherwise, please try again or contact support via pettrackerproject@gmail.com."
+        android:text="To send location entries from your custom device, send a HTTP POST request to https://pettracker.ngrok.app/locations/new with a request body that includes these properties:\n - 'username' with the value of your username;\n - 'device_name' with the value of the name you gave the device; \n - 'password' with the value of the password you created hashed with SHA256; \n - 'latitude' with your latitude coordinate; \n - 'longitude' with the value of your longitude coordinate. \n If you receive the response 'Entry saved', your request was successful, otherwise, please try again or contact support via pettrackerproject@gmail.com."
         app:layout_constraintBottom_toTopOf="@+id/deviceCreate_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

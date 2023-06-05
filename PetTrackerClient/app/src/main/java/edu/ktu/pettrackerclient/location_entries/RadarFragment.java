@@ -100,6 +100,7 @@ public class RadarFragment extends Fragment {
                     locationEntry = list.get(0);
                 } else {
                     noEntries.setVisibility(View.VISIBLE);
+                    noEntries.bringToFront();
                     Log.d("1122", "last location - location list null or empty");
                 }
 
@@ -250,6 +251,7 @@ public class RadarFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        handler.removeCallbacks(runnable); //stop handler when activity not visible super.onPause();
         if (sens != null) {
             mSensorManager.unregisterListener(mLightSensorListener);
         }

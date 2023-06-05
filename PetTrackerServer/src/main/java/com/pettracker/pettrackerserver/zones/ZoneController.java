@@ -127,12 +127,15 @@ public class ZoneController {
 	@PostMapping("create")
 	public MessageResponse addZone(@RequestHeader("Authorization") String token, @RequestBody ZoneWithPoints zonereq) {
 		User user = getUserByToken(token);
-		Optional<Zone> zoneDetails = zoneDao.getZoneByName(zonereq.getZone_name());
-		if (zoneDetails.isPresent()) {
-			Zone z = zoneDetails.get();
-			if (z.getFk_user_id().equals(user.getId())) {
-				return new MessageResponse(false, "Zone name is already used.");
+		List<Zone> zones = zoneDao.getZonesByName(zonereq.getZone_name());
+		if (zones.size() > 0) {
+			for(Zone z : zones) {
+				if (z.getFk_user_id().equals(user.getId()) && (zonereq.getId() == null || !z.getId().equals(zonereq.getId()))) {
+					System.out.println(zonereq);
+					return new MessageResponse(false, "Zone name is already used.");
+				}
 			}
+			
 		}
 		Zone zone = new Zone();
 		if (zonereq.getId() != null) {
@@ -149,7 +152,7 @@ public class ZoneController {
 			}
 		}
 		zonePointDao.saveAllZonePoints(points);
-		return new MessageResponse(true, "Zone created successfully!");
+		return new MessageResponse(true, "Zone saved successfully!");
 	}
 
 	@DeleteMapping("delete")

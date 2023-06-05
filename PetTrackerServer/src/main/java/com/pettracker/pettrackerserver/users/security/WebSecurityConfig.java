@@ -62,6 +62,7 @@ public class WebSecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
         .antMatchers("/locations/new").permitAll()
+        .antMatchers("/locations/delete").permitAll()
         .anyRequest().authenticated();
     
     http.authenticationProvider(authenticationProvider());

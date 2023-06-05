@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 
+import com.pettracker.pettrackerserver.pet_groups.PetGroup;
+
 @Service
 public class ZoneDao {
 	@Autowired
@@ -37,5 +39,10 @@ public class ZoneDao {
 	
 	public void deleteZonesByUser(Long user_id) {
 		repository.deleteByUser(user_id);
+	}
+	public List<Zone> getZonesByName(String name) {
+		List<Zone> z = new ArrayList<>();
+		Streamable.of(repository.findByNameAll(name)).forEach(z::add);
+		return z;
 	}
 }

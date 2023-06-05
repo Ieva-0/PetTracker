@@ -79,16 +79,18 @@ public class DeviceController {
 
 	@PostMapping("save")
 	public MessageResponse addDevice(@RequestHeader("Authorization") String token, @RequestBody Device device) {
-		Optional<Device> deviceDetails = deviceDao.getDeviceByName(device.getName());
-		if (deviceDetails.isPresent()) {
-			User user = getUserByToken(token);
-			Device d = deviceDetails.get();
-			if (d.getFk_user_id().equals(user.getId())) {
-				return new MessageResponse(false, "Device name is already used.");
+		User user = getUserByToken(token);
+		List<Device> devices = deviceDao.getDevicesByName(device.getName());
+		if (devices.size() > 0) {
+			for(Device d : devices) {
+				if (d.getFk_user_id().equals(user.getId()) && (device.getId() == null || !d.getId().equals(device.getId()))) {
+					return new MessageResponse(false, "Device name is already used.");
+				}
 			}
+			
 		}
 		deviceDao.save(device);
-		return new MessageResponse(true, "Device successfully created!");
+		return new MessageResponse(true, "Device successfully saved!");
 	}
 
 	@DeleteMapping("delete")
